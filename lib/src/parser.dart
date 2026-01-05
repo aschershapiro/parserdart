@@ -9,22 +9,46 @@ import 'package:iodart/iodart.dart';
 class PacketField {
   final String name;
   final String type;
-  final int offset;
+  int offset;
   final String endian;
+  final String? description;
 
   PacketField({
     required this.name,
     required this.type,
     required this.offset,
-    this.endian = 'big',
+    this.endian = 'little',
+    this.description,
   });
+
+  int get size {
+    switch (type) {
+      case 'uint8':
+      case 'int8':
+      case 'bool':
+        return 1;
+      case 'uint16':
+      case 'int16':
+        return 2;
+      case 'uint32':
+      case 'int32':
+      case 'float32':
+        return 4;
+      case 'float64':
+      case 'double':
+        return 8;
+      default:
+        return 0;
+    }
+  }
 
   factory PacketField.fromJson(Map<String, dynamic> json) {
     return PacketField(
-      name: json['name'] as String,
+      name: json['field_name'] as String,
       type: json['type'] as String,
-      offset: json['offset'] as int,
-      endian: json['endian'] as String? ?? 'big',
+      offset: json['byteOffset'] as int,
+      endian: json['endian'] as String? ?? 'little',
+      description: json['description'] as String?,
     );
   }
 }
@@ -33,32 +57,55 @@ class PacketField {
 class PacketSchema {
   final String id;
   final String description;
-  final int headerByteIndex;
-  final int headerByteValue;
+  final List<int> headerBytes;
   final int length;
   final List<PacketField> fields;
+  final String checksum;
 
   PacketSchema({
     required this.id,
     required this.description,
-    required this.headerByteIndex,
-    required this.headerByteValue,
+    required this.headerBytes,
     required this.length,
     required this.fields,
+    required this.checksum,
   });
 
   factory PacketSchema.fromJson(Map<String, dynamic> json) {
-    final header = json['header'] as Map<String, dynamic>;
-    final fieldsList = json['fields'] as List;
+    final headers = json['headers'] as Map<String, dynamic>;
+    final headerBytes = <int>[];
+    for (final value in headers.values) {
+      final str = value as String;
+      final hexValue = str.startsWith('0x') ? str.substring(2) : str;
+      headerBytes.add(int.parse(hexValue, radix: 16));
+    }
+    final headerLength = headerBytes.length;
+    final dataLengthStr = json['dataLength'] as String?;
+    final dataLength = dataLengthStr != null
+        ? int.parse(
+            dataLengthStr.startsWith('0x')
+                ? dataLengthStr.substring(2)
+                : dataLengthStr,
+            radix: 16,
+          )
+        : 0;
+    final checksum = json['checksum'] as String;
+    final checksumSize = checksum == 'CRC16' ? 2 : 0;
+    final fieldsList = json['data'] as List;
+    final fields = <PacketField>[];
+    for (final f in fieldsList) {
+      final field = PacketField.fromJson(f as Map<String, dynamic>);
+      field.offset += headerLength;
+      fields.add(field);
+    }
+    final length = headerLength + dataLength + checksumSize;
     return PacketSchema(
-      id: json['id'] as String,
-      description: json['description'] as String? ?? '',
-      headerByteIndex: header['byte'] as int,
-      headerByteValue: header['value'] as int,
-      length: json['length'] as int,
-      fields: fieldsList
-          .map((f) => PacketField.fromJson(f as Map<String, dynamic>))
-          .toList(),
+      id: json['packet_name'] as String,
+      description: json['description'] as String,
+      headerBytes: headerBytes,
+      length: length,
+      fields: fields,
+      checksum: checksum,
     );
   }
 }
@@ -114,8 +161,15 @@ class BinaryParser {
     // Try to match schemas against the buffer
     for (final schema in _schemas) {
       // Check if buffer is large enough for the header check
-      if (_buffer.length > schema.headerByteIndex) {
-        if (_buffer[schema.headerByteIndex] == schema.headerByteValue) {
+      if (_buffer.length >= schema.headerBytes.length) {
+        bool headerMatches = true;
+        for (int i = 0; i < schema.headerBytes.length; i++) {
+          if (_buffer[i] != schema.headerBytes[i]) {
+            headerMatches = false;
+            break;
+          }
+        }
+        if (headerMatches) {
           // Potential match, check length
           if (_buffer.length >= schema.length) {
             // We have a full packet
@@ -147,10 +201,18 @@ class BinaryParser {
 
     bool possibleMatch = false;
     for (final schema in _schemas) {
-      if (_buffer.length > schema.headerByteIndex &&
-          _buffer[schema.headerByteIndex] == schema.headerByteValue) {
-        possibleMatch = true;
-        break;
+      if (_buffer.length >= schema.headerBytes.length) {
+        bool headerMatches = true;
+        for (int i = 0; i < schema.headerBytes.length; i++) {
+          if (_buffer[i] != schema.headerBytes[i]) {
+            headerMatches = false;
+            break;
+          }
+        }
+        if (headerMatches) {
+          possibleMatch = true;
+          break;
+        }
       }
     }
 
@@ -198,6 +260,9 @@ class BinaryParser {
           value = byteData.getFloat32(field.offset, endian);
           break;
         case 'float64':
+          value = byteData.getFloat64(field.offset, endian);
+          break;
+        case 'double':
           value = byteData.getFloat64(field.offset, endian);
           break;
         case 'bool':

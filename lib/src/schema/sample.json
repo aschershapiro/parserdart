@@ -1,0 +1,34 @@
+{
+    "packet_name": "MainPacket",
+    "version": "1.0.0",
+    "description": "This is a sample JSON file for demonstration purposes.",
+    "headers": {
+        "header1": "0xca",
+        "header2": "0xfe",
+        "senderId": "0x01",
+        "receiverId": "0x02",
+        "messageId": "0x12",
+        "dataLength": "0xff"
+    },
+    "data": [
+        {
+            "field_name": "temperature",
+            "type": "uint16",
+            "byteOffset": 0, 
+            "description": "Temperature in Celsius"
+        },
+        {
+            "field_name": "humidity",
+            "type": "double",
+            "byteOffset": 2,
+            "description": "Humidity in Percent"
+        },
+        {
+            "field_name": "status",
+            "type": "uint8",
+            "byteOffset": 10,
+            "description": "Status of the device"
+        }
+    ],
+    "checksum": "CRC16"
+}
