@@ -1,1 +1,4 @@
-import 'package:iodart/iodart.dart';
+library parserdart;
+
+export 'package:iodart/iodart.dart';
+export 'src/parser.dart';
