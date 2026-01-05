@@ -80,28 +80,26 @@ class PacketSchema {
   factory PacketSchema.fromJson(Map<String, dynamic> json) {
     final headers = json['headers'] as Map<String, dynamic>;
     final headerBytes = <int>[];
-    for (final value in headers.values) {
-      final str = value as String;
+    int dataLength = 0;
+
+    for (final entry in headers.entries) {
+      final str = entry.value as String;
       final hexValue = str.startsWith('0x') ? str.substring(2) : str;
-      headerBytes.add(int.parse(hexValue, radix: 16));
+      final byteValue = int.parse(hexValue, radix: 16);
+      headerBytes.add(byteValue);
+
+      // Extract dataLength value from the header
+      if (entry.key == 'dataLength') {
+        dataLength = byteValue;
+      }
     }
     final headerLength = headerBytes.length;
-    final dataLengthStr = json['dataLength'] as String?;
-    final dataLength = dataLengthStr != null
-        ? int.parse(
-            dataLengthStr.startsWith('0x')
-                ? dataLengthStr.substring(2)
-                : dataLengthStr,
-            radix: 16,
-          )
-        : 0;
     final checksum = json['checksum'] as String;
     final checksumSize = checksum == 'CRC16' ? 2 : 0;
     final fieldsList = json['data'] as List;
     final fields = <PacketField>[];
     for (final f in fieldsList) {
       final field = PacketField.fromJson(f as Map<String, dynamic>);
-      field.offset += headerLength;
       fields.add(field);
     }
     final length = headerLength + dataLength + checksumSize;

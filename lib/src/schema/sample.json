@@ -8,25 +8,25 @@
         "senderId": "0x01",
         "receiverId": "0x02",
         "messageId": "0x12",
-        "dataLength": "0xff"
+        "dataLength": "0x0B"
     },
     "data": [
         {
             "field_name": "temperature",
             "type": "uint16",
-            "byteOffset": 0, 
+            "byteOffset": 6, 
             "description": "Temperature in Celsius"
         },
         {
             "field_name": "humidity",
             "type": "double",
-            "byteOffset": 2,
+            "byteOffset": 8,
             "description": "Humidity in Percent"
         },
         {
             "field_name": "status",
             "type": "uint8",
-            "byteOffset": 10,
+            "byteOffset": 16,
             "description": "Status of the device"
         }
     ],
