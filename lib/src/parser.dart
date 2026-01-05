@@ -58,17 +58,23 @@ class PacketSchema {
   final String id;
   final String description;
   final List<int> headerBytes;
+  final int headerLength;
+  final int dataLength;
   final int length;
   final List<PacketField> fields;
   final String checksum;
+  final int checksumSize;
 
   PacketSchema({
     required this.id,
     required this.description,
     required this.headerBytes,
+    required this.headerLength,
+    required this.dataLength,
     required this.length,
     required this.fields,
     required this.checksum,
+    required this.checksumSize,
   });
 
   factory PacketSchema.fromJson(Map<String, dynamic> json) {
@@ -103,9 +109,12 @@ class PacketSchema {
       id: json['packet_name'] as String,
       description: json['description'] as String,
       headerBytes: headerBytes,
+      headerLength: headerLength,
+      dataLength: dataLength,
       length: length,
       fields: fields,
       checksum: checksum,
+      checksumSize: checksumSize,
     );
   }
 }
@@ -116,8 +125,11 @@ class BinaryParser {
   final StreamController<Map<String, dynamic>> _parsedDataController =
       StreamController.broadcast();
 
-  // Buffer to hold incoming data until a full packet is parsed
+  /// Buffer to hold incoming data until a full packet is parsed.
   final List<int> _buffer = [];
+
+  /// Maximum buffer size to prevent memory issues (default: 64KB).
+  static const int maxBufferSize = 65536;
 
   Stream<Map<String, dynamic>> get onParsedData => _parsedDataController.stream;
 
@@ -149,83 +161,133 @@ class BinaryParser {
   /// Handles incoming raw binary data.
   void _handleData(Uint8List data) {
     _buffer.addAll(data);
+    _trimBufferIfNeeded();
     _processBuffer();
   }
 
-  /// Processes the buffer to find and parse packets.
+  /// Trims the buffer if it exceeds the maximum size.
+  void _trimBufferIfNeeded() {
+    if (_buffer.length > maxBufferSize) {
+      final excess = _buffer.length - maxBufferSize;
+      _buffer.removeRange(0, excess);
+    }
+  }
+
+  /// Processes the buffer to find and parse complete packets.
   void _processBuffer() {
-    if (_buffer.isEmpty) return;
-
-    bool packetFound = false;
-
-    // Try to match schemas against the buffer
-    for (final schema in _schemas) {
-      // Check if buffer is large enough for the header check
-      if (_buffer.length >= schema.headerBytes.length) {
-        bool headerMatches = true;
-        for (int i = 0; i < schema.headerBytes.length; i++) {
-          if (_buffer[i] != schema.headerBytes[i]) {
-            headerMatches = false;
-            break;
-          }
-        }
-        if (headerMatches) {
-          // Potential match, check length
-          if (_buffer.length >= schema.length) {
-            // We have a full packet
-            _parsePacket(schema);
-            packetFound = true;
-            break; // Restart processing with modified buffer
-          }
-        }
+    while (_buffer.isNotEmpty) {
+      // Step 1: Find a valid header
+      final headerIndex = _findHeader();
+      if (headerIndex == -1) {
+        // No valid header found, clear buffer (keep last few bytes for partial header)
+        _discardInvalidData();
+        return;
       }
-    }
 
-    // If a packet was found and parsed, try processing again (buffer shifted)
-    // If no packet found but buffer is growing, we might need to discard garbage
-    // For now, simple logic: if we parsed, recurse.
-    if (packetFound) {
-      _processBuffer();
-    } else {
-      // Optimization: If buffer is very large and no schema matches start,
-      // we might need to shift buffer by 1 byte to search for header.
-      // This is a simple implementation assuming aligned packets or clean stream.
-      // For robust stream parsing, we should scan for headers.
-      _scanForHeader();
+      // Step 2: Discard bytes before the header
+      if (headerIndex > 0) {
+        _buffer.removeRange(0, headerIndex);
+      }
+
+      // Step 3: Try to match and parse a packet
+      final schema = _matchSchema();
+      if (schema == null) {
+        // Header matched but no schema fits - discard first byte and retry
+        _buffer.removeAt(0);
+        continue;
+      }
+
+      // Step 4: Check if we have enough data for a complete packet
+      if (_buffer.length < schema.length) {
+        // Incomplete packet, wait for more data
+        return;
+      }
+
+      // Step 5: Parse the complete packet
+      _parsePacket(schema);
     }
   }
 
-  void _scanForHeader() {
-    // If the start of the buffer doesn't match any schema header, shift until it does or buffer empty
-    if (_buffer.isEmpty) return;
-
-    bool possibleMatch = false;
-    for (final schema in _schemas) {
-      if (_buffer.length >= schema.headerBytes.length) {
-        bool headerMatches = true;
-        for (int i = 0; i < schema.headerBytes.length; i++) {
-          if (_buffer[i] != schema.headerBytes[i]) {
-            headerMatches = false;
-            break;
-          }
-        }
-        if (headerMatches) {
-          possibleMatch = true;
-          break;
+  /// Finds the index of the first valid header in the buffer.
+  /// Returns -1 if no header is found.
+  int _findHeader() {
+    for (int i = 0; i <= _buffer.length; i++) {
+      for (final schema in _schemas) {
+        if (_matchesHeaderAt(schema, i)) {
+          return i;
         }
       }
     }
+    return -1;
+  }
 
-    if (!possibleMatch && _buffer.isNotEmpty) {
-      // Remove first byte and try again
-      _buffer.removeAt(0);
-      _processBuffer();
+  /// Checks if the buffer matches a schema's header at the given index.
+  bool _matchesHeaderAt(PacketSchema schema, int index) {
+    if (index + schema.headerBytes.length > _buffer.length) {
+      return false;
+    }
+    for (int i = 0; i < schema.headerBytes.length; i++) {
+      if (_buffer[index + i] != schema.headerBytes[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /// Returns the first schema that matches the current buffer start.
+  PacketSchema? _matchSchema() {
+    for (final schema in _schemas) {
+      if (_matchesHeaderAt(schema, 0)) {
+        return schema;
+      }
+    }
+    return null;
+  }
+
+  /// Discards invalid data while keeping potential partial headers.
+  void _discardInvalidData() {
+    if (_schemas.isEmpty || _buffer.isEmpty) {
+      _buffer.clear();
+      return;
+    }
+
+    // Keep only the last (maxHeaderLength - 1) bytes for partial header matching
+    final maxHeaderLength = _schemas
+        .map((s) => s.headerBytes.length)
+        .reduce((a, b) => a > b ? a : b);
+    final keepBytes = maxHeaderLength - 1;
+
+    if (_buffer.length > keepBytes) {
+      _buffer.removeRange(0, _buffer.length - keepBytes);
     }
   }
 
-  void _parsePacket(PacketSchema schema) {
-    // Extract packet bytes
+  /// Parses a packet from the buffer using the given schema.
+  /// Returns true if packet was valid and parsed, false if CRC failed.
+  bool _parsePacket(PacketSchema schema) {
     final packetBytes = Uint8List.fromList(_buffer.sublist(0, schema.length));
+
+    // Validate CRC16 if checksum is enabled
+    if (schema.checksum == 'CRC16' && schema.checksumSize > 0) {
+      final dataStart = schema.headerLength;
+      final dataEnd = schema.headerLength + schema.dataLength;
+      final dataBytes = packetBytes.sublist(dataStart, dataEnd);
+
+      // Extract received CRC (last 2 bytes, little-endian)
+      final crcOffset = schema.length - 2;
+      final receivedCrc =
+          packetBytes[crcOffset] | (packetBytes[crcOffset + 1] << 8);
+
+      // Calculate CRC16 of data bytes
+      final calculatedCrc = _calculateCrc16(dataBytes);
+
+      if (receivedCrc != calculatedCrc) {
+        // CRC mismatch - discard this packet
+        _buffer.removeRange(0, schema.length);
+        return false;
+      }
+    }
+
     final byteData = ByteData.sublistView(packetBytes);
 
     final result = <String, dynamic>{
@@ -234,53 +296,73 @@ class BinaryParser {
     };
 
     for (final field in schema.fields) {
-      dynamic value;
-      final endian = field.endian == 'little' ? Endian.little : Endian.big;
-
-      switch (field.type) {
-        case 'uint8':
-          value = byteData.getUint8(field.offset);
-          break;
-        case 'int8':
-          value = byteData.getInt8(field.offset);
-          break;
-        case 'uint16':
-          value = byteData.getUint16(field.offset, endian);
-          break;
-        case 'int16':
-          value = byteData.getInt16(field.offset, endian);
-          break;
-        case 'uint32':
-          value = byteData.getUint32(field.offset, endian);
-          break;
-        case 'int32':
-          value = byteData.getInt32(field.offset, endian);
-          break;
-        case 'float32':
-          value = byteData.getFloat32(field.offset, endian);
-          break;
-        case 'float64':
-          value = byteData.getFloat64(field.offset, endian);
-          break;
-        case 'double':
-          value = byteData.getFloat64(field.offset, endian);
-          break;
-        case 'bool':
-          value = byteData.getUint8(field.offset) != 0;
-          break;
-        default:
-          value = 'unsupported_type';
-      }
-      result[field.name] = value;
+      result[field.name] = _parseField(byteData, field);
     }
 
     _parsedDataController.add(result);
 
     // Remove parsed bytes from buffer
     _buffer.removeRange(0, schema.length);
+    return true;
   }
+
+  /// Calculates CRC16 (CCITT) for the given data bytes.
+  int _calculateCrc16(Uint8List data) {
+    int crc = 0xFFFF;
+    const polynomial = 0x1021;
+
+    for (final byte in data) {
+      crc ^= (byte << 8);
+      for (int i = 0; i < 8; i++) {
+        if ((crc & 0x8000) != 0) {
+          crc = ((crc << 1) ^ polynomial) & 0xFFFF;
+        } else {
+          crc = (crc << 1) & 0xFFFF;
+        }
+      }
+    }
+    return crc;
+  }
+
+  /// Parses a single field from the byte data.
+  dynamic _parseField(ByteData byteData, PacketField field) {
+    final endian = field.endian == 'little' ? Endian.little : Endian.big;
+
+    switch (field.type) {
+      case 'uint8':
+        return byteData.getUint8(field.offset);
+      case 'int8':
+        return byteData.getInt8(field.offset);
+      case 'uint16':
+        return byteData.getUint16(field.offset, endian);
+      case 'int16':
+        return byteData.getInt16(field.offset, endian);
+      case 'uint32':
+        return byteData.getUint32(field.offset, endian);
+      case 'int32':
+        return byteData.getInt32(field.offset, endian);
+      case 'float32':
+        return byteData.getFloat32(field.offset, endian);
+      case 'float64':
+      case 'double':
+        return byteData.getFloat64(field.offset, endian);
+      case 'bool':
+        return byteData.getUint8(field.offset) != 0;
+      default:
+        return null;
+    }
+  }
+
+  /// Clears the internal buffer.
+  void clearBuffer() {
+    _buffer.clear();
+  }
+
+  /// Returns the current buffer size.
+  int get bufferSize => _buffer.length;
 
   Future<void> dispose() async {
     await _parsedDataController.close();
+    _buffer.clear();
   }
 }

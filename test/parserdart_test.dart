@@ -65,22 +65,18 @@ void main() {
   });
 
   test('BinaryParser loads schema and parses packet', () async {
-    // Create a schema file based on new format
+    // Create a schema file
     final schemaJson = '''
     {
-      "packet_name": "test_packet",
-      "version": "1.0.0",
+      "id": "test_packet",
       "description": "Test Packet",
-      "headers": {
-        "header1": "0xAA"
-      },
-      "dataLength": "0x05",
-      "data": [
-        { "field_name": "val1", "type": "uint8", "byteOffset": 0 },
-        { "field_name": "val2", "type": "uint16", "byteOffset": 1, "endian": "little" },
-        { "field_name": "flag", "type": "bool", "byteOffset": 3 }
-      ],
-      "checksum": "CRC16"
+      "header": { "byte": 0, "value": 170 },
+      "length": 5,
+      "fields": [
+        { "name": "val1", "type": "uint8", "offset": 1 },
+        { "name": "val2", "type": "uint16", "offset": 2, "endian": "little" },
+        { "name": "flag", "type": "bool", "offset": 4 }
+      ]
     }
     ''';
     final schemaFile = File('${tempDir.path}/test.json');
@@ -95,18 +91,11 @@ void main() {
     // Expect parsed data
     final futureResult = parser.onParsedData.first;
 
-    // Send data: header 0xAA, data: val1=0x01, val2=0x0203 (little), flag=0x01, padding?, checksum 2 bytes
-    // Total length: 1 + 5 + 2 = 8
-    final data = Uint8List.fromList([
-      0xAA,
-      0x01,
-      0x02,
-      0x03,
-      0x01,
-      0x00,
-      0x00,
-      0x00,
-    ]);
+    // Send data: 0xAA (170), 0x01, 0x02, 0x03, 0x01
+    // val1 = 1
+    // val2 = 0x0302 (770) (little endian)
+    // flag = true (1)
+    final data = Uint8List.fromList([0xAA, 0x01, 0x02, 0x03, 0x01]);
     transport.emitData(data);
 
     final result = await futureResult;
