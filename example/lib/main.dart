@@ -45,7 +45,7 @@ class _ParserExamplePageState extends State<ParserExamplePage> {
   Future<void> _initParser() async {
     try {
       // Load schemas from the package's schema directory
-      await _parser.loadSchemas('../lib/src/schema');
+      await _parser.loadSchemas('../lib/src/schema_input');
       setState(() {
         _status = 'Schemas loaded. Ready to connect.';
       });

@@ -63,7 +63,7 @@ void main() {
 
   test('BinaryParser loads schema and parses packet', () async {
     // Load schemas from the actual schema directory
-    await parser.loadSchemas('lib/src/schema');
+    await parser.loadSchemas('lib/src/schema_input');
 
     // Start parser
     parser.start(transport);
