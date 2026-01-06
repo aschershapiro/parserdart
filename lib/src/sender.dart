@@ -317,6 +317,9 @@ class BinaryPacketSender {
   /// Returns the list of loaded schema names.
   List<String> get schemaNames => _schemas.map((s) => s.id).toList();
 
+  /// Returns the list of loaded schemas.
+  List<PacketSchema> get schemas => List.unmodifiable(_schemas);
+
   /// Clears all loaded schemas.
   void clearSchemas() {
     _schemas.clear();

@@ -44,7 +44,7 @@ class PacketField {
 
   factory PacketField.fromJson(Map<String, dynamic> json) {
     return PacketField(
-      name: json['field_name'] as String,
+      name: (json['field_name'] ?? json['tag']) as String,
       type: json['type'] as String,
       offset: json['byteOffset'] as int,
       endian: json['endian'] as String? ?? 'little',
