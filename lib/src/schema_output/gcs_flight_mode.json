@@ -1,0 +1,22 @@
+{
+    "packet_name": "gcs_flight_mode",
+    "version": "1.0.0",
+    "description": "sending flight mode number form GCS to flight controller",
+    "headers": {
+        "header1": "0xca",
+        "header2": "0xfe",
+        "senderId": "0x02",
+        "receiverId": "0x01",
+        "messageId": "0xA0",
+        "dataLength": "0x02"
+    },
+    "data": [
+        {
+            "tag": "flight_mode",
+            "type": "uint8",
+            "byteOffset": 6, 
+            "description": "0: warmup, 1: manual, 2: stabilize, 3: auto"
+        }
+    ],
+    "checksum": "CRC16"
+}

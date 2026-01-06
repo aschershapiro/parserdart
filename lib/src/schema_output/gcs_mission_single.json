@@ -1,0 +1,51 @@
+{
+    "packet_name": "gcs_mission_single",
+    "version": "1.0.0",
+    "description": "sending a single waypoint from GCS to flight controller",
+    "headers": {
+        "header1": "0xca",
+        "header2": "0xfe",
+        "senderId": "0x02",
+        "receiverId": "0x01",
+        "messageId": "0xA1",
+        "dataLength": "0x02"
+    },
+    "data": [
+        {
+            "tag": "waypoint_number",
+            "type": "uint16",
+            "byteOffset": 6
+        },
+        {
+            "tag": "waypoint_latitude",
+            "type": "double",
+            "byteOffset": 8
+        },
+        {
+            "tag": "waypoint_longitude",
+            "type": "double",
+            "byteOffset": 16
+        },
+        {
+            "tag": "waypoint_altitude",
+            "type": "float",
+            "byteOffset": 24
+        },
+        {
+            "tag": "waypoint_speed",
+            "type": "uint16",
+            "byteOffset": 28
+        },
+        {
+            "tag": "waypoint_mode",
+            "type": "uint8",
+            "byteOffset": 30
+        },
+        {
+            "tag": "waypoint_param",
+            "type": "uint16",
+            "byteOffset": 31
+        }          
+    ],
+    "checksum": "CRC16"
+}

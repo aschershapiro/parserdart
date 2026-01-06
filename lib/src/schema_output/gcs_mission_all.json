@@ -1,0 +1,16 @@
+{
+    "packet_name": "gcs_mission_all",
+    "version": "1.0.0",
+    "description": "sending all waypoints from GCS to flight controller",
+    "headers": {
+        "header1": "0xca",
+        "header2": "0xfe",
+        "senderId": "0x02",
+        "receiverId": "0x01",
+        "messageId": "0xA2",
+        "dataLength": "0x02"
+    },
+    "data": [      
+    ],
+    "checksum": "CRC16"
+}
