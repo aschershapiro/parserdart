@@ -9,6 +9,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "2.13.0"
+  binary:
+    dependency: transitive
+    description:
+      name: binary
+      sha256: "9e095f2f1c94f06501352c8621f12d055da1c945dffae933ed0ae7fa5eeba046"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "4.0.0"
   boolean_selector:
     dependency: transitive
     description:

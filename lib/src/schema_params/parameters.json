@@ -1,0 +1,52 @@
+{
+  "Params": [
+    {
+      "Title": "FW_RR_FF",
+      "Type": "float",
+      "Group": 1,
+      "Key": 1,
+      "Value": 1.0,
+      "Info": ""
+    },
+    {
+      "Title": "FW_RR_I",
+      "Type": "float",
+      "Group": 1,
+      "Key": 2,
+      "Value": 2.0,
+      "Info": ""
+    },
+    {
+      "Title": "FW_RR_IMAX",
+      "Type": "int16",
+      "Group": 1,
+      "Key": 3,
+      "Value": 3,
+      "Info": ""
+    },
+    {
+      "Title": "FW_RR_P",
+      "Type": "double",
+      "Group": 1,
+      "Key": 4,
+      "Value": 4.023423,
+      "Info": ""
+    },
+    {
+      "Title": "FW_R_RMAX",
+      "Type": "uint8",
+      "Group": 1,
+      "Key": 5,
+      "Value": 5,
+      "Info": ""
+    },
+    {
+      "Title": "FW_RSP_OFF",
+      "Type": "uint32",
+      "Group": 1,
+      "Key": 6,
+      "Value": 12342342,
+      "Info": ""
+    }
+  ]
+}

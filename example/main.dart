@@ -4,7 +4,10 @@ import 'dart:typed_data';
 import 'package:parserdart/parserdart.dart';
 
 void main() async {
-  print("hello:");
+  print("test:");
+  Parameters params = Parameters.fromJson(
+    '../lib/src/schema_params/parameters.json',
+  );
   BinaryParser parser = BinaryParser();
   await parser.loadSchemas('../lib/src/schema_input');
   const receiverPort = 5555;
