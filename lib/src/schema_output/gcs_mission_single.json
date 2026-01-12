@@ -8,7 +8,7 @@
         "senderId": "0x02",
         "receiverId": "0x01",
         "messageId": "0xA1",
-        "dataLength": "0x02"
+        "dataLength": "0x21"
     },
     "data": [
         {

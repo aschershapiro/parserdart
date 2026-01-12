@@ -1,0 +1,21 @@
+{
+    "packet_name": "gcs_chute",
+    "version": "1.0.0",
+    "description": "sending chute command from GCS to flight controller: 0:close/reset 1:open",
+    "headers": {
+        "header1": "0xca",
+        "header2": "0xfe",
+        "senderId": "0x02",
+        "receiverId": "0x01",
+        "messageId": "0xA3",
+        "dataLength": "0x01"
+    },
+    "data": [
+        {
+            "tag": "chute",
+            "type": "uint8",
+            "byteOffset": 6
+        }
+    ],
+    "checksum": "CRC16"
+}

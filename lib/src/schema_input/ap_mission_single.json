@@ -1,0 +1,58 @@
+{
+    "packet_name": "ap_mission_single",
+    "version": "1.0.0",
+    "description": "This is a sample JSON file for demonstration purposes.",
+    "headers": {
+        "header1": "0xca",
+        "header2": "0xfe",
+        "senderId": "0x01",
+        "receiverId": "0x02",
+        "messageId": "0x12",
+        "dataLength": "0x21"
+    },
+    "data": [
+        {
+            "field_name": "waypoint_number",
+            "type": "uint16",
+            "byteOffset": 6,
+            "description": "Waypoint number"
+        },
+        {
+            "field_name": "waypoint_latitude",
+            "type": "double",
+            "byteOffset": 8,
+            "description": "Waypoint Latitude"
+        },
+        {
+            "field_name": "waypoint_longitude",
+            "type": "double",
+            "byteOffset": 16,
+            "description": "Waypoint Longitude"
+        },
+        {
+            "field_name": "waypoint_altitude",
+            "type": "float",
+            "byteOffset": 24,
+            "description": "Waypoint Altitude"
+        },
+        {
+            "field_name": "waypoint_speed",
+            "type": "uint16",
+            "byteOffset": 28,
+            "description": "Waypoint Speed"
+        },
+        {
+            "field_name": "waypoint_mode",
+            "type": "uint8",
+            "byteOffset": 30,
+            "description": "Waypoint Mode"
+        },
+        {
+            "field_name": "waypoint_param",
+            "type": "uint8",
+            "byteOffset": 31,
+            "description": "Waypoint Parameter"
+        }
+    ],
+    "checksum": "CRC16"
+}

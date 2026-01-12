@@ -1,0 +1,21 @@
+{
+    "packet_name": "gcs_reset",
+    "version": "1.0.0",
+    "description": "sending Reset command from GCS to flight controller: 0:null 1:reset",
+    "headers": {
+        "header1": "0xca",
+        "header2": "0xfe",
+        "senderId": "0x02",
+        "receiverId": "0x01",
+        "messageId": "0xA5",
+        "dataLength": "0x01"
+    },
+    "data": [
+        {
+            "tag": "reset",
+            "type": "uint8",
+            "byteOffset": 6
+        }
+    ],
+    "checksum": "CRC16"
+}

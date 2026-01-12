@@ -1,5 +1,5 @@
 {
-    "packet_name": "MainPacket",
+    "packet_name": "ap_sample",
     "version": "1.0.0",
     "description": "This is a sample JSON file for demonstration purposes.",
     "headers": {
@@ -7,7 +7,7 @@
         "header2": "0xfe",
         "senderId": "0x01",
         "receiverId": "0x02",
-        "messageId": "0x12",
+        "messageId": "0x10",
         "dataLength": "0x0B"
     },
     "data": [

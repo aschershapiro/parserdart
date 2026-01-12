@@ -1,0 +1,21 @@
+{
+    "packet_name": "gcs_arm",
+    "version": "1.0.0",
+    "description": "sending Arm command from GCS to flight controller: 0:disarm 1:arm 2:forceArm",
+    "headers": {
+        "header1": "0xca",
+        "header2": "0xfe",
+        "senderId": "0x02",
+        "receiverId": "0x01",
+        "messageId": "0xA4",
+        "dataLength": "0x01"
+    },
+    "data": [
+        {
+            "tag": "arm",
+            "type": "uint8",
+            "byteOffset": 6
+        }
+    ],
+    "checksum": "CRC16"
+}
