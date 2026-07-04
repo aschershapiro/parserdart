@@ -14,19 +14,16 @@
         {
             "field_name": "group",
             "type": "uint8",
-            "byteOffset": 6,
             "description": "Parameter Group"
         },
         {
             "field_name": "key",
             "type": "uint8",
-            "byteOffset": 7,
             "description": "Parameter Key"
         },
         {
             "field_name": "value",
             "type": "uint64",
-            "byteOffset": 8,
             "description": "Parameter Value"
         }
     ],

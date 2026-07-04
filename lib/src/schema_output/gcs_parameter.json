@@ -13,18 +13,15 @@
     "data": [
         {
             "tag": "Group",
-            "type": "uint8",
-            "byteOffset": 6
+            "type": "uint8"
         },
-                {
+        {
             "tag": "Key",
-            "type": "uint8",
-            "byteOffset": 7
+            "type": "uint8"
         },
-                {
+        {
             "tag": "Value",
-            "type": "double",
-            "byteOffset": 8
+            "type": "double"
         }
     ],
     "checksum": "CRC16"

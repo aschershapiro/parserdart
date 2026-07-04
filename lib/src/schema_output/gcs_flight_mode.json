@@ -14,7 +14,6 @@
         {
             "tag": "flight_mode",
             "type": "uint8",
-            "byteOffset": 6, 
             "description": "0: warmup, 1: manual, 2: stabilize, 3: auto"
         }
     ],

@@ -77,10 +77,10 @@ void main() {
     // Checksum: CRC16 = 2 bytes
     // Total: 6 + 11 + 2 = 19 bytes
     //
-    // Fields (byteOffset is absolute from packet start):
-    //   temperature: uint16 at byteOffset 6
-    //   humidity: double at byteOffset 8
-    //   status: uint8 at byteOffset 16
+    // Field offsets are computed from header length (6) + preceding field sizes:
+    //   temperature: uint16 at offset 6  (headerLength=6)
+    //   humidity:    double  at offset 8  (6+2)
+    //   status:      uint8   at offset 16 (8+8)
 
     // Create data section (11 bytes)
     final dataBytes = ByteData(11);

@@ -59,17 +59,32 @@ Uint8List uint8ToBytes(int value) {
 }
 
 int dataLength(String type) {
-  if (type == "float" || type == "int" || type == "uint") {
-    return 4;
-  } else if (type == "double") {
-    return 8;
+  switch (type) {
+    case 'uint8':
+    case 'int8':
+    case 'bool':
+    case 'byte':
+      return 1;
+    case 'uint16':
+    case 'int16':
+    case 'short':
+    case 'ushort':
+      return 2;
+    case 'float':
+    case 'float32':
+    case 'uint32':
+    case 'int32':
+    case 'int':
+    case 'uint':
+      return 4;
+    case 'double':
+    case 'float64':
+    case 'uint64':
+    case 'int64':
+      return 8;
+    default:
+      return 0;
   }
-  if (type == "short" || type == "ushort") {
-    return 2;
-  } else if (type == "byte") {
-    return 1;
-  }
-  return 0;
 }
 
 double bytesToFloat32(Uint8List data) {

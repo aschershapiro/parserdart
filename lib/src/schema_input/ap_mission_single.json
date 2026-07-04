@@ -14,43 +14,36 @@
         {
             "field_name": "waypoint_number",
             "type": "uint16",
-            "byteOffset": 6,
             "description": "Waypoint number"
         },
         {
             "field_name": "waypoint_latitude",
             "type": "double",
-            "byteOffset": 8,
             "description": "Waypoint Latitude"
         },
         {
             "field_name": "waypoint_longitude",
             "type": "double",
-            "byteOffset": 16,
             "description": "Waypoint Longitude"
         },
         {
             "field_name": "waypoint_altitude",
             "type": "float",
-            "byteOffset": 24,
             "description": "Waypoint Altitude"
         },
         {
             "field_name": "waypoint_speed",
             "type": "uint16",
-            "byteOffset": 28,
             "description": "Waypoint Speed"
         },
         {
             "field_name": "waypoint_mode",
             "type": "uint8",
-            "byteOffset": 30,
             "description": "Waypoint Mode"
         },
         {
             "field_name": "waypoint_param",
             "type": "uint8",
-            "byteOffset": 31,
             "description": "Waypoint Parameter"
         }
     ],

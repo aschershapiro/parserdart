@@ -32,8 +32,11 @@ class PacketField {
         return 2;
       case 'uint32':
       case 'int32':
+      case 'float':
       case 'float32':
         return 4;
+      case 'uint64':
+      case 'int64':
       case 'float64':
       case 'double':
         return 8;
@@ -46,7 +49,7 @@ class PacketField {
     return PacketField(
       name: (json['field_name'] ?? json['tag']) as String,
       type: json['type'] as String,
-      offset: json['byteOffset'] as int,
+      offset: 0,
       endian: json['endian'] as String? ?? 'little',
       description: json['description'] as String?,
     );
@@ -98,8 +101,11 @@ class PacketSchema {
     final checksumSize = checksum == 'CRC16' ? 2 : 0;
     final fieldsList = json['data'] as List;
     final fields = <PacketField>[];
+    int fieldOffset = headerLength;
     for (final f in fieldsList) {
       final field = PacketField.fromJson(f as Map<String, dynamic>);
+      field.offset = fieldOffset;
+      fieldOffset += field.size;
       fields.add(field);
     }
     final length = headerLength + dataLength + checksumSize;
@@ -339,6 +345,7 @@ class BinaryParser {
         return byteData.getUint32(field.offset, endian);
       case 'int32':
         return byteData.getInt32(field.offset, endian);
+      case 'float':
       case 'float32':
         return byteData.getFloat32(field.offset, endian);
       case 'float64':

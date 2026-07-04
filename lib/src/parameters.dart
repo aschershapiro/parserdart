@@ -46,9 +46,9 @@ class Parameter {
   Map toJson() => {
     'Title': title,
     'Type': type,
-    'Group': group,
-    'Key': key,
-    'Value': value.toString(),
+    'Group': group.toInt(),
+    'Key': key.toInt(),
+    'Value': (type == 'float' || type == 'double') ? value : value.toInt(),
     'Info': info,
   };
   final String title;

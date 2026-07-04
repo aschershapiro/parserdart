@@ -13,39 +13,32 @@
     "data": [
         {
             "tag": "waypoint_number",
-            "type": "uint16",
-            "byteOffset": 6
+            "type": "uint16"
         },
         {
             "tag": "waypoint_latitude",
-            "type": "double",
-            "byteOffset": 8
+            "type": "double"
         },
         {
             "tag": "waypoint_longitude",
-            "type": "double",
-            "byteOffset": 16
+            "type": "double"
         },
         {
             "tag": "waypoint_altitude",
-            "type": "float",
-            "byteOffset": 24
+            "type": "float"
         },
         {
             "tag": "waypoint_speed",
-            "type": "uint16",
-            "byteOffset": 28
+            "type": "uint16"
         },
         {
             "tag": "waypoint_mode",
-            "type": "uint8",
-            "byteOffset": 30
+            "type": "uint8"
         },
         {
             "tag": "waypoint_param",
-            "type": "uint16",
-            "byteOffset": 31
-        }          
+            "type": "uint16"
+        }
     ],
     "checksum": "CRC16"
 }

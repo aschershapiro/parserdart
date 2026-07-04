@@ -13,8 +13,7 @@
     "data": [
         {
             "tag": "chute",
-            "type": "uint8",
-            "byteOffset": 6
+            "type": "uint8"
         }
     ],
     "checksum": "CRC16"

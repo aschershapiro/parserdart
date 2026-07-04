@@ -14,19 +14,16 @@
         {
             "field_name": "temperature",
             "type": "uint16",
-            "byteOffset": 6, 
             "description": "Temperature in Celsius"
         },
         {
             "field_name": "humidity",
             "type": "double",
-            "byteOffset": 8,
             "description": "Humidity in Percent"
         },
         {
             "field_name": "status",
             "type": "uint8",
-            "byteOffset": 16,
             "description": "Status of the device"
         }
     ],

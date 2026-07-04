@@ -1,51 +1,1347 @@
 {
   "Params": [
     {
-      "Title": "FW_RR_FF",
-      "Type": "float",
+      "Title": "SERVO_1_pwmMin",
+      "Type": "uint16",
       "Group": 1,
       "Key": 1,
-      "Value": 1.0,
+      "Value": 0,
       "Info": ""
     },
     {
-      "Title": "FW_RR_I",
-      "Type": "float",
+      "Title": "SERVO_1_pwmIdle",
+      "Type": "uint16",
       "Group": 1,
       "Key": 2,
-      "Value": 2.0,
+      "Value": 0,
       "Info": ""
     },
     {
-      "Title": "FW_RR_IMAX",
-      "Type": "int16",
+      "Title": "SERVO_1_pwmMax",
+      "Type": "uint16",
       "Group": 1,
       "Key": 3,
-      "Value": 3,
+      "Value": 0,
       "Info": ""
     },
     {
-      "Title": "FW_RR_P",
-      "Type": "double",
+      "Title": "SERVO_1_reversed",
+      "Type": "uint8",
       "Group": 1,
       "Key": 4,
-      "Value": 4.023423,
+      "Value": 0,
       "Info": ""
     },
     {
-      "Title": "FW_R_RMAX",
+      "Title": "SERVO_1_function",
       "Type": "uint8",
       "Group": 1,
       "Key": 5,
-      "Value": 5,
+      "Value": 0,
       "Info": ""
     },
     {
-      "Title": "FW_RSP_OFF",
-      "Type": "uint32",
+      "Title": "SERVO_2_pwmMin",
+      "Type": "uint16",
       "Group": 1,
       "Key": 6,
-      "Value": 12342342,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "SERVO_2_pwmIdle",
+      "Type": "uint16",
+      "Group": 1,
+      "Key": 7,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "SERVO_2_pwmMax",
+      "Type": "uint16",
+      "Group": 1,
+      "Key": 8,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "SERVO_2_reversed",
+      "Type": "uint8",
+      "Group": 1,
+      "Key": 9,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "SERVO_2_function",
+      "Type": "uint8",
+      "Group": 1,
+      "Key": 10,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "SERVO_3_pwmMin",
+      "Type": "uint16",
+      "Group": 1,
+      "Key": 11,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "SERVO_3_pwmIdle",
+      "Type": "uint16",
+      "Group": 1,
+      "Key": 12,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "SERVO_3_pwmMax",
+      "Type": "uint16",
+      "Group": 1,
+      "Key": 13,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "SERVO_3_reversed",
+      "Type": "uint8",
+      "Group": 1,
+      "Key": 14,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "SERVO_3_function",
+      "Type": "uint8",
+      "Group": 1,
+      "Key": 15,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "SERVO_4_pwmMin",
+      "Type": "uint16",
+      "Group": 1,
+      "Key": 16,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "SERVO_4_pwmIdle",
+      "Type": "uint16",
+      "Group": 1,
+      "Key": 17,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "SERVO_4_pwmMax",
+      "Type": "uint16",
+      "Group": 1,
+      "Key": 18,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "SERVO_4_reversed",
+      "Type": "uint8",
+      "Group": 1,
+      "Key": 19,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "SERVO_4_function",
+      "Type": "uint8",
+      "Group": 1,
+      "Key": 20,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "SERVO_5_pwmMin",
+      "Type": "uint16",
+      "Group": 1,
+      "Key": 21,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "SERVO_5_pwmIdle",
+      "Type": "uint16",
+      "Group": 1,
+      "Key": 22,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "SERVO_5_pwmMax",
+      "Type": "uint16",
+      "Group": 1,
+      "Key": 23,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "SERVO_5_reversed",
+      "Type": "uint8",
+      "Group": 1,
+      "Key": 24,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "SERVO_5_function",
+      "Type": "uint8",
+      "Group": 1,
+      "Key": 25,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "SERVO_6_pwmMin",
+      "Type": "uint16",
+      "Group": 1,
+      "Key": 26,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "SERVO_6_pwmIdle",
+      "Type": "uint16",
+      "Group": 1,
+      "Key": 27,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "SERVO_6_pwmMax",
+      "Type": "uint16",
+      "Group": 1,
+      "Key": 28,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "SERVO_6_reversed",
+      "Type": "uint8",
+      "Group": 1,
+      "Key": 29,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "SERVO_6_function",
+      "Type": "uint8",
+      "Group": 1,
+      "Key": 30,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "SERVO_7_pwmMin",
+      "Type": "uint16",
+      "Group": 1,
+      "Key": 31,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "SERVO_7_pwmIdle",
+      "Type": "uint16",
+      "Group": 1,
+      "Key": 32,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "SERVO_7_pwmMax",
+      "Type": "uint16",
+      "Group": 1,
+      "Key": 33,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "SERVO_7_reversed",
+      "Type": "uint8",
+      "Group": 1,
+      "Key": 34,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "SERVO_7_function",
+      "Type": "uint8",
+      "Group": 1,
+      "Key": 35,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "DeflectionLimits_aileronMin",
+      "Type": "float",
+      "Group": 2,
+      "Key": 1,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "DeflectionLimits_aileronIdle",
+      "Type": "float",
+      "Group": 2,
+      "Key": 2,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "DeflectionLimits_aileronMax",
+      "Type": "float",
+      "Group": 2,
+      "Key": 3,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "DeflectionLimits_elevatorMin",
+      "Type": "float",
+      "Group": 2,
+      "Key": 4,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "DeflectionLimits_elevatorIdle",
+      "Type": "float",
+      "Group": 2,
+      "Key": 5,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "DeflectionLimits_elevatorMax",
+      "Type": "float",
+      "Group": 2,
+      "Key": 6,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "DeflectionLimits_rudderMin",
+      "Type": "float",
+      "Group": 2,
+      "Key": 7,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "DeflectionLimits_rudderIdle",
+      "Type": "float",
+      "Group": 2,
+      "Key": 8,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "DeflectionLimits_rudderMax",
+      "Type": "float",
+      "Group": 2,
+      "Key": 9,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "DeflectionLimits_throttleMin",
+      "Type": "float",
+      "Group": 2,
+      "Key": 10,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "DeflectionLimits_throttleIdle",
+      "Type": "float",
+      "Group": 2,
+      "Key": 11,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "DeflectionLimits_throttleCruise",
+      "Type": "float",
+      "Group": 2,
+      "Key": 12,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "DeflectionLimits_throttleMax",
+      "Type": "float",
+      "Group": 2,
+      "Key": 13,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FMS_LAUNCH_initialPitch",
+      "Type": "float",
+      "Group": 3,
+      "Key": 1,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FMS_LAUNCH_auto",
+      "Type": "float",
+      "Group": 3,
+      "Key": 2,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FMS_LAUNCH_trigger1",
+      "Type": "float",
+      "Group": 3,
+      "Key": 3,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FMS_LAUNCH_trigger2",
+      "Type": "float",
+      "Group": 3,
+      "Key": 4,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FMS_LAUNCH_delay",
+      "Type": "float",
+      "Group": 3,
+      "Key": 5,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FMS_MODE_auto",
+      "Type": "uint8",
+      "Group": 3,
+      "Key": 6,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_ROLL_limit",
+      "Type": "float",
+      "Group": 4,
+      "Key": 1,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_ROLL_gainScheduling",
+      "Type": "uint8",
+      "Group": 4,
+      "Key": 2,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_ROLL_pilotOverrideThreshold",
+      "Type": "float",
+      "Group": 4,
+      "Key": 3,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_ROLLRATE_p",
+      "Type": "float",
+      "Group": 4,
+      "Key": 4,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_ROLLRATE_i",
+      "Type": "float",
+      "Group": 4,
+      "Key": 5,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_ROLLRATE_d",
+      "Type": "float",
+      "Group": 4,
+      "Key": 6,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_ROLLRATE_ff",
+      "Type": "float",
+      "Group": 4,
+      "Key": 7,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_ROLLRATE_tc",
+      "Type": "float",
+      "Group": 4,
+      "Key": 8,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_ROLLRATE_limit",
+      "Type": "float",
+      "Group": 4,
+      "Key": 9,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_ROLLRATE_integralLimit",
+      "Type": "float",
+      "Group": 4,
+      "Key": 10,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_ROLLRATE_errorLimit",
+      "Type": "float",
+      "Group": 4,
+      "Key": 11,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_PITCH_limit",
+      "Type": "float",
+      "Group": 4,
+      "Key": 12,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_PITCH_p",
+      "Type": "float",
+      "Group": 4,
+      "Key": 13,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_PITCH_i",
+      "Type": "float",
+      "Group": 4,
+      "Key": 14,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_PITCH_d",
+      "Type": "float",
+      "Group": 4,
+      "Key": 15,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_PITCH_integralLimit",
+      "Type": "float",
+      "Group": 4,
+      "Key": 16,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_PITCH_error_limit",
+      "Type": "float",
+      "Group": 4,
+      "Key": 17,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_PITCH_gainScheduling",
+      "Type": "uint8",
+      "Group": 4,
+      "Key": 18,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_ALT_limit",
+      "Type": "float",
+      "Group": 4,
+      "Key": 19,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_ALT_p",
+      "Type": "float",
+      "Group": 4,
+      "Key": 20,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_ALT_i",
+      "Type": "float",
+      "Group": 4,
+      "Key": 21,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_ALT_d",
+      "Type": "float",
+      "Group": 4,
+      "Key": 22,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_ALT_integralLimit",
+      "Type": "float",
+      "Group": 4,
+      "Key": 23,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_YAW_BTT_limit",
+      "Type": "float",
+      "Group": 4,
+      "Key": 24,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_YAW_BTT_p",
+      "Type": "float",
+      "Group": 4,
+      "Key": 25,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_YAW_BTT_i",
+      "Type": "float",
+      "Group": 4,
+      "Key": 26,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_YAW_BTT_d",
+      "Type": "float",
+      "Group": 4,
+      "Key": 27,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_Yaw_BTT__integralLimit",
+      "Type": "float",
+      "Group": 4,
+      "Key": 28,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_YAW_STT_limit",
+      "Type": "float",
+      "Group": 4,
+      "Key": 29,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_YAW_STT_p",
+      "Type": "float",
+      "Group": 4,
+      "Key": 30,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_YAW_STT_i",
+      "Type": "float",
+      "Group": 4,
+      "Key": 31,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_YAW_STT_d",
+      "Type": "float",
+      "Group": 4,
+      "Key": 32,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_YAW_STT_tc",
+      "Type": "float",
+      "Group": 4,
+      "Key": 33,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_YAW_STT_ff",
+      "Type": "float",
+      "Group": 4,
+      "Key": 34,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_Yaw_STT__integralLimit",
+      "Type": "float",
+      "Group": 4,
+      "Key": 35,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_speedCompThreshold",
+      "Type": "float",
+      "Group": 4,
+      "Key": 36,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_SPEED_errorLimit",
+      "Type": "float",
+      "Group": 4,
+      "Key": 37,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_SPEED_p",
+      "Type": "float",
+      "Group": 4,
+      "Key": 38,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_SPEED_i",
+      "Type": "float",
+      "Group": 4,
+      "Key": 39,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_SPEED_d",
+      "Type": "float",
+      "Group": 4,
+      "Key": 40,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_SPEED_integralLimit",
+      "Type": "float",
+      "Group": 4,
+      "Key": 41,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_SPEED_climbGradiant",
+      "Type": "float",
+      "Group": 4,
+      "Key": 42,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_SPEED_controlEnabled",
+      "Type": "float",
+      "Group": 4,
+      "Key": 43,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "CNT_PITCH_trimPitch",
+      "Type": "float",
+      "Group": 4,
+      "Key": 44,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_linkTimeoutThreshold",
+      "Type": "float",
+      "Group": 5,
+      "Key": 1,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_ecuTimeoutThreshold",
+      "Type": "float",
+      "Group": 5,
+      "Key": 2,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_insTimeoutThreshold",
+      "Type": "float",
+      "Group": 5,
+      "Key": 3,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_batteryTimeoutThreshold",
+      "Type": "float",
+      "Group": 5,
+      "Key": 4,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_gpsTimeoutThreshold",
+      "Type": "float",
+      "Group": 5,
+      "Key": 5,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_rollTimeoutThreshold",
+      "Type": "float",
+      "Group": 5,
+      "Key": 6,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_pitchTimeoutThreshold",
+      "Type": "float",
+      "Group": 5,
+      "Key": 7,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_speedTimeoutThreshold",
+      "Type": "float",
+      "Group": 5,
+      "Key": 8,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_altTimeoutThreshold",
+      "Type": "float",
+      "Group": 5,
+      "Key": 9,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_minRPM",
+      "Type": "float",
+      "Group": 5,
+      "Key": 10,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_minbatteryMainVoltage",
+      "Type": "float",
+      "Group": 5,
+      "Key": 11,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_rollMax",
+      "Type": "float",
+      "Group": 5,
+      "Key": 12,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_pitchMax",
+      "Type": "float",
+      "Group": 5,
+      "Key": 13,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_pitchMin",
+      "Type": "float",
+      "Group": 5,
+      "Key": 14,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_speedMin",
+      "Type": "float",
+      "Group": 5,
+      "Key": 15,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_altMin",
+      "Type": "float",
+      "Group": 5,
+      "Key": 16,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_HomeRadius",
+      "Type": "float",
+      "Group": 5,
+      "Key": 17,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_cutLinkRadius",
+      "Type": "float",
+      "Group": 5,
+      "Key": 18,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_act1Trigger1",
+      "Type": "float",
+      "Group": 5,
+      "Key": 19,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_act1Trigger2",
+      "Type": "float",
+      "Group": 5,
+      "Key": 20,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_act1Trigger3",
+      "Type": "float",
+      "Group": 5,
+      "Key": 21,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_act2Trigger1",
+      "Type": "float",
+      "Group": 5,
+      "Key": 22,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_act2Trigger2",
+      "Type": "float",
+      "Group": 5,
+      "Key": 23,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_act2Trigger3",
+      "Type": "float",
+      "Group": 5,
+      "Key": 24,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_act3Trigger1",
+      "Type": "float",
+      "Group": 5,
+      "Key": 25,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_act3Trigger2",
+      "Type": "float",
+      "Group": 5,
+      "Key": 26,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_act3Trigger3",
+      "Type": "float",
+      "Group": 5,
+      "Key": 27,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_act4Trigger1",
+      "Type": "float",
+      "Group": 5,
+      "Key": 28,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_act5Trigger1",
+      "Type": "float",
+      "Group": 5,
+      "Key": 29,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_act5Trigger2",
+      "Type": "float",
+      "Group": 5,
+      "Key": 30,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_act6Trigger1",
+      "Type": "float",
+      "Group": 5,
+      "Key": 31,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_act7Trigger1",
+      "Type": "float",
+      "Group": 5,
+      "Key": 32,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_failflagsEnable_0",
+      "Type": "uint8",
+      "Group": 5,
+      "Key": 33,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_failflagsEnable_1",
+      "Type": "uint8",
+      "Group": 5,
+      "Key": 34,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_failflagsEnable_2",
+      "Type": "uint8",
+      "Group": 5,
+      "Key": 35,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_failflagsEnable_3",
+      "Type": "uint8",
+      "Group": 5,
+      "Key": 36,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_failflagsEnable_4",
+      "Type": "uint8",
+      "Group": 5,
+      "Key": 37,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_failflagsEnable_5",
+      "Type": "uint8",
+      "Group": 5,
+      "Key": 38,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_failflagsEnable_6",
+      "Type": "uint8",
+      "Group": 5,
+      "Key": 39,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_failflagsEnable_7",
+      "Type": "uint8",
+      "Group": 5,
+      "Key": 40,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_failflagsEnable_8",
+      "Type": "uint8",
+      "Group": 5,
+      "Key": 41,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_failflagsEnable_9",
+      "Type": "uint8",
+      "Group": 5,
+      "Key": 42,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "GUI_homeRadius",
+      "Type": "uint16",
+      "Group": 6,
+      "Key": 1,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "GUI_wpPassRadius",
+      "Type": "uint16",
+      "Group": 6,
+      "Key": 2,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "GNCGNSS_GAMMA_errorLimit",
+      "Type": "float",
+      "Group": 7,
+      "Key": 1,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "GNCGNSS_GAMMA_i",
+      "Type": "float",
+      "Group": 7,
+      "Key": 2,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "GNCGNSS_GAMMADOT_i",
+      "Type": "float",
+      "Group": 7,
+      "Key": 3,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "GNCGNSS_GAMMA_integralLimit",
+      "Type": "float",
+      "Group": 7,
+      "Key": 4,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "GNCGNSS_GAMMADOT_integralLimit",
+      "Type": "float",
+      "Group": 7,
+      "Key": 5,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "GNCGNSS_GAMMA_p",
+      "Type": "float",
+      "Group": 7,
+      "Key": 6,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "GNCGNSS_PITCH_p",
+      "Type": "float",
+      "Group": 7,
+      "Key": 7,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "GNCGNSS_GAMMADOT_p",
+      "Type": "float",
+      "Group": 7,
+      "Key": 8,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "GNCGNSS_PITCHRATE_p",
+      "Type": "float",
+      "Group": 7,
+      "Key": 9,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "GNCGNSS_CHI_errorLimit",
+      "Type": "float",
+      "Group": 7,
+      "Key": 10,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "GNCGNSS_ROLLRATE_pitch2p",
+      "Type": "float",
+      "Group": 7,
+      "Key": 11,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "GNCGNSS_ROLLRATE_pitchCompThreshold",
+      "Type": "float",
+      "Group": 7,
+      "Key": 12,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "GNCGNSS_ROLLRATE_p",
+      "Type": "float",
+      "Group": 7,
+      "Key": 13,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "GNCGNSS_ROLLRATE_pitch2ff",
+      "Type": "float",
+      "Group": 7,
+      "Key": 14,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "GNCGNSS_ROLLRATE_ff",
+      "Type": "float",
+      "Group": 7,
+      "Key": 15,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "GNCGNSS_CHI_i",
+      "Type": "float",
+      "Group": 7,
+      "Key": 16,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "GNCGNSS_CHI_integralLimit",
+      "Type": "float",
+      "Group": 7,
+      "Key": 17,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "GNCGNSS_BTT",
+      "Type": "uint8",
+      "Group": 7,
+      "Key": 18,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "GNCGNSS_CHI_p",
+      "Type": "float",
+      "Group": 7,
+      "Key": 19,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "GNCGNSS_ROLLRATE_errorLimit",
+      "Type": "float",
+      "Group": 7,
+      "Key": 20,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "GNCGNSS_ROLLRATE_tc",
+      "Type": "float",
+      "Group": 7,
+      "Key": 21,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "GNCGNSS_ROLLRATE_i",
+      "Type": "float",
+      "Group": 7,
+      "Key": 22,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "GNCGNSS_ROLLRATE_integralLimit",
+      "Type": "float",
+      "Group": 7,
+      "Key": 23,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "GNCGNSS_GAMMADOT_errorLimit",
+      "Type": "float",
+      "Group": 7,
+      "Key": 24,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "GNCGNSS_ALGORITHM",
+      "Type": "uint8",
+      "Group": 7,
+      "Key": 26,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
+      "Title": "GNCGNSS_GAMMA_final",
+      "Type": "float",
+      "Group": 7,
+      "Key": 27,
+      "Value": 0.0,
       "Info": ""
     }
   ]
