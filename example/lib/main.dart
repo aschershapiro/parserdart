@@ -34,12 +34,26 @@ class ParserSenderExamplePage extends StatefulWidget {
 class _ParserSenderExamplePageState extends State<ParserSenderExamplePage> {
   late BinaryParser _parser;
   late BinaryPacketSender _sender;
-  UdpTransport? _receiver;
-  UdpTransport? _senderTransport;
+  Transport? _receiver;
+  Transport? _senderTransport;
   final List<Map<String, dynamic>> _parsedPackets = [];
   String _status = 'Not connected';
   bool _isConnected = false;
   int _tabIndex = 0;
+
+  // Connection type
+  int _connectionType = 0; // 0 = UDP, 1 = Serial
+
+  // UDP config
+  final _receiverPortController = TextEditingController(text: '5555');
+  final _senderPortController = TextEditingController(text: '5556');
+  final _remoteHostController = TextEditingController(text: '127.0.0.1');
+
+  // Serial config
+  List<SerialDeviceInfo> _availablePorts = [];
+  String? _selectedPort;
+  final _baudRateController = TextEditingController(text: '115200');
+  SerialTransport? _serialTransport;
 
   @override
   void initState() {
@@ -74,36 +88,31 @@ class _ParserSenderExamplePageState extends State<ParserSenderExamplePage> {
     });
   }
 
+  Future<void> _refreshSerialPorts() async {
+    try {
+      final transport = createSerialTransport();
+      final devices = await transport.listDevices();
+      await transport.dispose();
+      setState(() {
+        _availablePorts = devices;
+        if (_selectedPort == null && devices.isNotEmpty) {
+          _selectedPort = devices.first.portName;
+        }
+      });
+    } catch (e) {
+      setState(() {
+        _status = 'Error listing serial ports: $e';
+      });
+    }
+  }
+
   Future<void> _startListening() async {
     try {
-      const receiverPort = 5555;
-      const senderPort = 5556;
-
-      // Setup receiver
-      final receiverConfig = UdpConfig(
-        localHost: '127.0.0.1',
-        localPort: receiverPort,
-      );
-      _receiver = UdpTransport(receiverConfig);
-      await _receiver!.connect();
-      _parser.start(_receiver!);
-
-      // Setup sender transport
-      final senderConfig = UdpConfig(
-        localHost: '127.0.0.1',
-        localPort: senderPort,
-        remoteHost: '127.0.0.1',
-        remotePort: receiverPort,
-      );
-      _senderTransport = UdpTransport(senderConfig);
-      await _senderTransport!.connect();
-      _sender.setTransport(_senderTransport!);
-
-      setState(() {
-        _status =
-            'Connected - Receiving on port $receiverPort, Sending to port $receiverPort';
-        _isConnected = true;
-      });
+      if (_connectionType == 0) {
+        await _startUdp();
+      } else {
+        await _startSerial();
+      }
     } catch (e) {
       setState(() {
         _status = 'Error connecting: $e';
@@ -111,11 +120,72 @@ class _ParserSenderExamplePageState extends State<ParserSenderExamplePage> {
     }
   }
 
+  Future<void> _startUdp() async {
+    final receiverPort = int.parse(_receiverPortController.text);
+    final senderPort = int.parse(_senderPortController.text);
+
+    // Setup receiver
+    final receiverConfig = UdpConfig(
+      localHost: '127.0.0.1',
+      localPort: receiverPort,
+    );
+    _receiver = UdpTransport(receiverConfig);
+    await _receiver!.connect();
+    _parser.start(_receiver!);
+
+    // Setup sender transport
+    final senderConfig = UdpConfig(
+      localHost: '127.0.0.1',
+      localPort: senderPort,
+      remoteHost: _remoteHostController.text,
+      remotePort: receiverPort,
+    );
+    _senderTransport = UdpTransport(senderConfig);
+    await _senderTransport!.connect();
+    _sender.setTransport(_senderTransport!);
+
+    setState(() {
+      _status =
+          'UDP Connected - Receiving on port $receiverPort, Sending to ${_remoteHostController.text}:$receiverPort';
+      _isConnected = true;
+    });
+  }
+
+  Future<void> _startSerial() async {
+    if (_selectedPort == null) {
+      throw Exception('No serial port selected');
+    }
+
+    final baudRate = int.parse(_baudRateController.text);
+
+    // Create a single serial transport for both sending and receiving
+    _serialTransport = createSerialTransport();
+    final config = SerialConfig(baudRate: baudRate);
+    await _serialTransport!.open(_selectedPort!, config);
+
+    // Use the serial transport for both parser (receiving) and sender
+    _receiver = _serialTransport;
+    _senderTransport = _serialTransport;
+    _parser.start(_serialTransport!);
+    _sender.setTransport(_serialTransport!);
+
+    setState(() {
+      _status = 'Serial Connected - $_selectedPort @ $baudRate baud';
+      _isConnected = true;
+    });
+  }
+
   Future<void> _stopListening() async {
-    await _receiver?.disconnect();
-    await _receiver?.dispose();
-    await _senderTransport?.disconnect();
-    await _senderTransport?.dispose();
+    if (_connectionType == 1 && _serialTransport != null) {
+      await _serialTransport!.disconnect();
+      await _serialTransport!.dispose();
+      _serialTransport = null;
+    } else {
+      await _receiver?.disconnect();
+      await _receiver?.dispose();
+      await _senderTransport?.disconnect();
+      await _senderTransport?.dispose();
+    }
     _receiver = null;
     _senderTransport = null;
     setState(() {
@@ -128,7 +198,12 @@ class _ParserSenderExamplePageState extends State<ParserSenderExamplePage> {
   void dispose() {
     _receiver?.dispose();
     _senderTransport?.dispose();
+    _serialTransport?.dispose();
     _parser.dispose();
+    _receiverPortController.dispose();
+    _senderPortController.dispose();
+    _remoteHostController.dispose();
+    _baudRateController.dispose();
     super.dispose();
   }
 
@@ -147,21 +222,60 @@ class _ParserSenderExamplePageState extends State<ParserSenderExamplePage> {
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(
-                      _isConnected ? Icons.check_circle : Icons.circle_outlined,
-                      color: _isConnected ? Colors.green : Colors.grey,
+                    Row(
+                      children: [
+                        Icon(
+                          _isConnected
+                              ? Icons.check_circle
+                              : Icons.circle_outlined,
+                          color: _isConnected ? Colors.green : Colors.grey,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(child: Text(_status)),
+                        const SizedBox(width: 16),
+                        ElevatedButton(
+                          onPressed: _isConnected
+                              ? _stopListening
+                              : _startListening,
+                          child: Text(_isConnected ? 'Disconnect' : 'Connect'),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 8),
-                    Expanded(child: Text(_status)),
-                    const SizedBox(width: 16),
-                    ElevatedButton(
-                      onPressed: _isConnected
-                          ? _stopListening
-                          : _startListening,
-                      child: Text(_isConnected ? 'Disconnect' : 'Connect'),
-                    ),
+                    if (!_isConnected) ...[
+                      const SizedBox(height: 16),
+                      SegmentedButton<int>(
+                        segments: const [
+                          ButtonSegment<int>(
+                            value: 0,
+                            label: Text('UDP'),
+                            icon: Icon(Icons.lan),
+                          ),
+                          ButtonSegment<int>(
+                            value: 1,
+                            label: Text('Serial'),
+                            icon: Icon(Icons.usb),
+                          ),
+                        ],
+                        selected: {_connectionType},
+                        onSelectionChanged: (Set<int> newSelection) {
+                          setState(() {
+                            _connectionType = newSelection.first;
+                            if (_connectionType == 1 &&
+                                _availablePorts.isEmpty) {
+                              _refreshSerialPorts();
+                            }
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      if (_connectionType == 0)
+                        _buildUdpConfig()
+                      else
+                        _buildSerialConfig(),
+                    ],
                   ],
                 ),
               ),
@@ -194,6 +308,107 @@ class _ParserSenderExamplePageState extends State<ParserSenderExamplePage> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildUdpConfig() {
+    return Row(
+      children: [
+        Expanded(
+          child: TextField(
+            controller: _remoteHostController,
+            decoration: const InputDecoration(
+              labelText: 'Remote Host',
+              border: OutlineInputBorder(),
+            ),
+          ),
+        ),
+        const SizedBox(width: 8),
+        SizedBox(
+          width: 100,
+          child: TextField(
+            controller: _receiverPortController,
+            decoration: const InputDecoration(
+              labelText: 'Rx Port',
+              border: OutlineInputBorder(),
+            ),
+            keyboardType: TextInputType.number,
+          ),
+        ),
+        const SizedBox(width: 8),
+        SizedBox(
+          width: 100,
+          child: TextField(
+            controller: _senderPortController,
+            decoration: const InputDecoration(
+              labelText: 'Tx Port',
+              border: OutlineInputBorder(),
+            ),
+            keyboardType: TextInputType.number,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSerialConfig() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: DropdownButtonFormField<String>(
+                value: _selectedPort,
+                decoration: const InputDecoration(
+                  labelText: 'Serial Port',
+                  border: OutlineInputBorder(),
+                ),
+                items: _availablePorts.map((device) {
+                  final label = device.description != null
+                      ? '${device.portName} (${device.description})'
+                      : device.portName;
+                  return DropdownMenuItem(
+                    value: device.portName,
+                    child: Text(label),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedPort = value;
+                  });
+                },
+              ),
+            ),
+            const SizedBox(width: 8),
+            IconButton(
+              onPressed: _refreshSerialPorts,
+              icon: const Icon(Icons.refresh),
+              tooltip: 'Refresh ports',
+            ),
+            const SizedBox(width: 8),
+            SizedBox(
+              width: 120,
+              child: TextField(
+                controller: _baudRateController,
+                decoration: const InputDecoration(
+                  labelText: 'Baud Rate',
+                  border: OutlineInputBorder(),
+                ),
+                keyboardType: TextInputType.number,
+              ),
+            ),
+          ],
+        ),
+        if (_availablePorts.isEmpty)
+          const Padding(
+            padding: EdgeInsets.only(top: 8),
+            child: Text(
+              'No serial ports found. Click refresh to scan again.',
+              style: TextStyle(color: Colors.orange),
+            ),
+          ),
+      ],
     );
   }
 
