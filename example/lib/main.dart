@@ -34,14 +34,8 @@ class ParserSenderExamplePage extends StatefulWidget {
 class _ParserSenderExamplePageState extends State<ParserSenderExamplePage> {
   late BinaryParser _parser;
   late BinaryPacketSender _sender;
-<<<<<<< HEAD
-  SerialTransport? _stp;
-  // UdpTransport? _receiver;
-  // UdpTransport? _senderTransport;
-=======
   Transport? _receiver;
   Transport? _senderTransport;
->>>>>>> 06d52bd6a3dd4a92db89130bf32e8c3f149f039a
   final List<Map<String, dynamic>> _parsedPackets = [];
   String _status = 'Not connected';
   bool _isConnected = false;
@@ -114,42 +108,11 @@ class _ParserSenderExamplePageState extends State<ParserSenderExamplePage> {
 
   Future<void> _startListening() async {
     try {
-<<<<<<< HEAD
-      // const receiverPort = 5555;
-      // const senderPort = 5556;
-
-      // Setup receiver
-      // final receiverConfig = UdpConfig(
-      //   localHost: '127.0.0.1',
-      //   localPort: receiverPort,
-      // );
-      _stp = createSerialTransport();
-      await _stp!.open('COM4', const SerialConfig(baudRate: 115200));
-      _parser.start(_stp!);
-
-      // Setup sender transport
-      // final senderConfig = UdpConfig(
-      //   localHost: '127.0.0.1',
-      //   localPort: senderPort,
-      //   remoteHost: '127.0.0.1',
-      //   remotePort: receiverPort,
-      // );
-      // _senderTransport = UdpTransport(senderConfig);
-      // await _senderTransport!.connect();
-      _sender.setTransport(_stp!);
-
-      setState(() {
-        _status = 'Connected to Serial port ${_stp?.portName}';
-        // 'Connected - Receiving on port $receiverPort, Sending to port $receiverPort';
-        _isConnected = true;
-      });
-=======
       if (_connectionType == 0) {
         await _startUdp();
       } else {
         await _startSerial();
       }
->>>>>>> 06d52bd6a3dd4a92db89130bf32e8c3f149f039a
     } catch (e) {
       setState(() {
         _status = 'Error connecting: $e';
@@ -213,10 +176,6 @@ class _ParserSenderExamplePageState extends State<ParserSenderExamplePage> {
   }
 
   Future<void> _stopListening() async {
-<<<<<<< HEAD
-    await _stp?.close();
-
-=======
     if (_connectionType == 1 && _serialTransport != null) {
       await _serialTransport!.disconnect();
       await _serialTransport!.dispose();
@@ -229,7 +188,6 @@ class _ParserSenderExamplePageState extends State<ParserSenderExamplePage> {
     }
     _receiver = null;
     _senderTransport = null;
->>>>>>> 06d52bd6a3dd4a92db89130bf32e8c3f149f039a
     setState(() {
       _status = 'Disconnected';
       _isConnected = false;
@@ -238,18 +196,11 @@ class _ParserSenderExamplePageState extends State<ParserSenderExamplePage> {
 
   @override
   void dispose() {
-<<<<<<< HEAD
-    _stp?.dispose();
-=======
     _receiver?.dispose();
     _senderTransport?.dispose();
-    _serialTransport?.dispose();
->>>>>>> 06d52bd6a3dd4a92db89130bf32e8c3f149f039a
-    _parser.dispose();
     _receiverPortController.dispose();
     _senderPortController.dispose();
     _remoteHostController.dispose();
-    _baudRateController.dispose();
     super.dispose();
   }
 
