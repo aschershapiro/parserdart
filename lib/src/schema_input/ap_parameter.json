@@ -1,0 +1,28 @@
+{
+    "packet_name": "gcs_parameter_single",
+    "version": "1.0.0",
+    "description": "sending a single parameter from GCS to flight controller",
+    "headers": {
+        "header1": "0xca",
+        "header2": "0xfe",
+        "senderId": "0x01",
+        "receiverId": "0x02",
+        "messageId": "0x11",
+        "dataLength": "auto"
+    },
+    "data": [
+        {
+            "tag": "Group",
+            "type": "uint8"
+        },
+                {
+            "tag": "Key",
+            "type": "uint8"
+        },
+                {
+            "tag": "Value",
+            "type": "double"
+        }
+    ],
+    "checksum": "CRC16"
+}
