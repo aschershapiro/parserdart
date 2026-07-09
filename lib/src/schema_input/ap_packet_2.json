@@ -1,0 +1,20 @@
+{
+    "packet_name": "ap_sample_2",
+    "version": "1.0.0",
+    "description": "Sample autopilot telemetry packet — edit fields freely, then run: python tools/gen_telemetry.py",
+    "headers": {
+        "header1": "0xca",
+        "header2": "0xfe",
+        "senderId": "0x01",
+        "receiverId": "0x02",
+        "messageId": "0x10",
+        "dataLength": "auto"
+    },
+    "data": [
+        { "field_name": "IMU.roll",                    "type": "float",    "description": "Roll angle (rad)" },
+        { "field_name": "IMU.pitch",                   "type": "float",    "description": "Pitch angle (rad)" },
+        { "field_name": "IMU.yaw",                     "type": "float",    "description": "Yaw angle (rad)" },
+        { "field_name": "IMU.altBaro",                 "type": "float",    "description": "Barometric altitude (m)" }
+    ],
+    "checksum": "CRC16"
+}

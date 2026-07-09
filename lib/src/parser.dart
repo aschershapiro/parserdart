@@ -63,6 +63,8 @@ class PacketSchema {
   final List<int> headerBytes;
   final int headerLength;
   final int dataLength;
+  final bool hasAutoDataLength;
+  final int? dataLengthHeaderIndex;
   final int length;
   final List<PacketField> fields;
   final String checksum;
@@ -74,6 +76,8 @@ class PacketSchema {
     required this.headerBytes,
     required this.headerLength,
     required this.dataLength,
+    required this.hasAutoDataLength,
+    required this.dataLengthHeaderIndex,
     required this.length,
     required this.fields,
     required this.checksum,
@@ -84,9 +88,17 @@ class PacketSchema {
     final headers = json['headers'] as Map<String, dynamic>;
     final headerBytes = <int>[];
     int dataLength = 0;
+    bool hasAutoDataLength = false;
+    int? dataLengthHeaderIndex;
 
     for (final entry in headers.entries) {
       final str = entry.value as String;
+      if (entry.key == 'dataLength' && str.toLowerCase() == 'auto') {
+        hasAutoDataLength = true;
+        dataLengthHeaderIndex = headerBytes.length;
+        headerBytes.add(0);
+        continue;
+      }
       final hexValue = str.startsWith('0x') ? str.substring(2) : str;
       final byteValue = int.parse(hexValue, radix: 16);
       headerBytes.add(byteValue);
@@ -115,11 +127,24 @@ class PacketSchema {
       headerBytes: headerBytes,
       headerLength: headerLength,
       dataLength: dataLength,
+      hasAutoDataLength: hasAutoDataLength,
+      dataLengthHeaderIndex: dataLengthHeaderIndex,
       length: length,
       fields: fields,
       checksum: checksum,
       checksumSize: checksumSize,
     );
+  }
+
+  int actualDataLength(Uint8List packetBytes) {
+    if (hasAutoDataLength && dataLengthHeaderIndex != null) {
+      return packetBytes[dataLengthHeaderIndex!];
+    }
+    return dataLength;
+  }
+
+  int packetLength(Uint8List packetBytes) {
+    return headerLength + actualDataLength(packetBytes) + checksumSize;
   }
 }
 
@@ -201,14 +226,25 @@ class BinaryParser {
         continue;
       }
 
-      // Step 4: Check if we have enough data for a complete packet
-      if (_buffer.length < schema.length) {
+      if (_buffer.length < schema.headerLength) {
+        // Wait until the full header is available
+        return;
+      }
+
+      // Determine full packet length using received header bytes when auto length is used.
+      final packetLength = schema.hasAutoDataLength
+          ? schema.packetLength(
+              Uint8List.fromList(_buffer.sublist(0, schema.headerLength)),
+            )
+          : schema.length;
+
+      if (_buffer.length < packetLength) {
         // Incomplete packet, wait for more data
         return;
       }
 
       // Step 5: Parse the complete packet
-      _parsePacket(schema);
+      _parsePacket(schema, packetLength);
     }
   }
 
@@ -231,6 +267,9 @@ class BinaryParser {
       return false;
     }
     for (int i = 0; i < schema.headerBytes.length; i++) {
+      if (schema.hasAutoDataLength && schema.dataLengthHeaderIndex == i) {
+        continue;
+      }
       if (_buffer[index + i] != schema.headerBytes[i]) {
         return false;
       }
@@ -268,17 +307,18 @@ class BinaryParser {
 
   /// Parses a packet from the buffer using the given schema.
   /// Returns true if packet was valid and parsed, false if CRC failed.
-  bool _parsePacket(PacketSchema schema) {
-    final packetBytes = Uint8List.fromList(_buffer.sublist(0, schema.length));
+  bool _parsePacket(PacketSchema schema, int packetLength) {
+    final packetBytes = Uint8List.fromList(_buffer.sublist(0, packetLength));
+    final actualDataLength = schema.actualDataLength(packetBytes);
 
     // Validate CRC16 if checksum is enabled
     if (schema.checksum == 'CRC16' && schema.checksumSize > 0) {
       final dataStart = schema.headerLength;
-      final dataEnd = schema.headerLength + schema.dataLength;
+      final dataEnd = schema.headerLength + actualDataLength;
       final dataBytes = packetBytes.sublist(dataStart, dataEnd);
 
       // Extract received CRC (last 2 bytes, little-endian)
-      final crcOffset = schema.length - 2;
+      final crcOffset = packetLength - 2;
       final receivedCrc =
           packetBytes[crcOffset] | (packetBytes[crcOffset + 1] << 8);
 
@@ -287,7 +327,7 @@ class BinaryParser {
 
       if (receivedCrc != calculatedCrc) {
         // CRC mismatch - discard this packet
-        _buffer.removeRange(0, schema.length);
+        _buffer.removeRange(0, packetLength);
         return false;
       }
     }
@@ -306,7 +346,7 @@ class BinaryParser {
     _parsedDataController.add(result);
 
     // Remove parsed bytes from buffer
-    _buffer.removeRange(0, schema.length);
+    _buffer.removeRange(0, packetLength);
     return true;
   }
 

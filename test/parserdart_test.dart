@@ -133,4 +133,45 @@ void main() {
     expect(result['humidity'], 65.5);
     expect(result['status'], 1);
   });
+
+  test('BinaryParser parses auto dataLength packet from schema', () async {
+    await parser.loadSchemas('lib/src/schema_input');
+    parser.start(transport);
+
+    final futureResult = parser.onParsedData.first;
+
+    // Packet header: 0xCA,0xFE,0x01,0x02,0x10,0x10 (dataLength=16)
+    final header = <int>[0xCA, 0xFE, 0x01, 0x02, 0x10, 0x10];
+
+    final dataBytes = ByteData(16);
+    dataBytes.setFloat32(0, 1.1, Endian.little);
+    dataBytes.setFloat32(4, 2.2, Endian.little);
+    dataBytes.setFloat32(8, 3.3, Endian.little);
+    dataBytes.setFloat32(12, 4.4, Endian.little);
+    final dataList = dataBytes.buffer.asUint8List();
+
+    int crc = 0xFFFF;
+    const polynomial = 0x1021;
+    for (final byte in dataList) {
+      crc ^= (byte << 8);
+      for (int i = 0; i < 8; i++) {
+        if ((crc & 0x8000) != 0) {
+          crc = ((crc << 1) ^ polynomial) & 0xFFFF;
+        } else {
+          crc = (crc << 1) & 0xFFFF;
+        }
+      }
+    }
+
+    final packet = <int>[...header, ...dataList, crc & 0xFF, (crc >> 8) & 0xFF];
+
+    transport.emitData(Uint8List.fromList(packet));
+    final result = await futureResult;
+
+    expect(result['schemaId'], 'ap_sample_2');
+    expect(result['IMU.roll'], closeTo(1.1, 1e-6));
+    expect(result['IMU.pitch'], closeTo(2.2, 1e-6));
+    expect(result['IMU.yaw'], closeTo(3.3, 1e-6));
+    expect(result['IMU.altBaro'], closeTo(4.4, 1e-6));
+  });
 }
