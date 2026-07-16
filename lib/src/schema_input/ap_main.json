@@ -1,0 +1,19 @@
+﻿{
+    "packet_name": "MainPacket",
+    "version": "1.0.0",
+    "description": "Sample autopilot telemetry packet with temperature, humidity and status.",
+    "headers": {
+        "header1": "0xca",
+        "header2": "0xfe",
+        "senderId": "0x01",
+        "receiverId": "0x02",
+        "messageId": "0x12",
+        "dataLength": "0x0B"
+    },
+    "data": [
+        { "field_name": "temperature", "type": "uint16", "description": "Temperature (centi-degrees)" },
+        { "field_name": "humidity", "type": "double", "description": "Humidity (percent)" },
+        { "field_name": "status", "type": "uint8", "description": "Status flag" }
+    ],
+    "checksum": "CRC16"
+}

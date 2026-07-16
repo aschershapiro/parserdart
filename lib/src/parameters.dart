@@ -6,6 +6,8 @@ import 'package:binary/binary.dart';
 import 'utility.dart';
 
 class Parameters implements JsonHandler {
+  Parameters();
+
   Parameters.fromJson(String path) {
     var input = File(path).readAsStringSync();
     var map = jsonDecode(input);

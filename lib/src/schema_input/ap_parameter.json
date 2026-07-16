@@ -1,7 +1,7 @@
 {
-    "packet_name": "gcs_parameter_single",
+    "packet_name": "ap_parameter_single",
     "version": "1.0.0",
-    "description": "sending a single parameter from GCS to flight controller",
+    "description": "echo of a single parameter from flight controller to GCS",
     "headers": {
         "header1": "0xca",
         "header2": "0xfe",

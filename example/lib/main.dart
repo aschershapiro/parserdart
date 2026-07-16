@@ -55,6 +55,13 @@ class _ParserSenderExamplePageState extends State<ParserSenderExamplePage> {
   final _baudRateController = TextEditingController(text: '115200');
   SerialTransport? _serialTransport;
 
+  // Parameter sync state
+  Parameters? _parameters;
+  List<ParameterSyncResult> _syncResults = [];
+  bool _isSyncing = false;
+  int _syncProgress = 0; // number of parameters processed so far
+  String _syncStatus = 'Parameters not loaded';
+
   @override
   void initState() {
     super.initState();
@@ -69,12 +76,20 @@ class _ParserSenderExamplePageState extends State<ParserSenderExamplePage> {
       await _parser.loadSchemas('../lib/src/schema_input');
       // Load schemas for sending
       await _sender.loadSchemas('../lib/src/schema_output');
+      // Load the parameter definitions
+      _parameters = Parameters.fromJson(
+        '../lib/src/schema_params/parameters.json',
+      );
       setState(() {
         _status = 'Schemas loaded. Ready to connect.';
+        _syncStatus =
+            '${_parameters!.params.length} parameters loaded. '
+            'Connect and press "Sync All" to send them one by one.';
       });
     } catch (e) {
       setState(() {
         _status = 'Error loading schemas: $e';
+        _syncStatus = 'Failed to load parameters: $e';
       });
     }
 
@@ -290,6 +305,11 @@ class _ParserSenderExamplePageState extends State<ParserSenderExamplePage> {
                   label: Text('Sender'),
                   icon: Icon(Icons.upload),
                 ),
+                ButtonSegment<int>(
+                  value: 2,
+                  label: Text('Param Sync'),
+                  icon: Icon(Icons.sync),
+                ),
               ],
               selected: {_tabIndex},
               onSelectionChanged: (Set<int> newSelection) {
@@ -300,11 +320,186 @@ class _ParserSenderExamplePageState extends State<ParserSenderExamplePage> {
             ),
             const SizedBox(height: 16),
             Expanded(
-              child: _tabIndex == 0 ? _buildReceiverView() : _buildSenderView(),
+              child: _tabIndex == 0
+                  ? _buildReceiverView()
+                  : _tabIndex == 1
+                  ? _buildSenderView()
+                  : _buildParamSyncView(),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> _syncAllParameters() async {
+    if (_parameters == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Parameters not loaded')));
+      return;
+    }
+    if (!_isConnected) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please connect first')));
+      return;
+    }
+
+    setState(() {
+      _isSyncing = true;
+      _syncResults = [];
+      _syncProgress = 0;
+      _syncStatus = 'Syncing parameters...';
+    });
+
+    final sync = ParameterSync(
+      sender: _sender,
+      parser: _parser,
+      parameters: _parameters!,
+      timeout: const Duration(seconds: 2),
+      maxRetries: 3,
+    );
+
+    // Run the sync. syncAll processes parameters sequentially, so we update
+    // progress as each result arrives by listening to the growing results list.
+    final results = await sync.syncAll();
+
+    if (!mounted) return;
+    final matched = results.where((r) => r.matched).length;
+    setState(() {
+      _syncResults = results;
+      _syncProgress = results.length;
+      _isSyncing = false;
+      _syncStatus =
+          'Done: $matched/${results.length} parameters confirmed. '
+          '${results.length - matched} failed.';
+    });
+  }
+
+  Widget _buildParamSyncView() {
+    if (_parameters == null) {
+      return Center(child: Text(_syncStatus));
+    }
+
+    final total = _parameters!.params.length;
+    final matched = _syncResults.where((r) => r.matched).length;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Header + sync button
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                'Parameter Sync ($total params)',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
+            if (_isSyncing)
+              const Padding(
+                padding: EdgeInsets.only(right: 12),
+                child: SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              ),
+            ElevatedButton.icon(
+              onPressed: _isSyncing || !_isConnected
+                  ? null
+                  : _syncAllParameters,
+              icon: const Icon(Icons.sync),
+              label: const Text('Sync All'),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(_syncStatus, style: Theme.of(context).textTheme.bodySmall),
+        if (_isSyncing || _syncResults.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          LinearProgressIndicator(
+            value: total == 0 ? 0 : _syncProgress / total,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            '$_syncProgress / $total'
+            '${_syncResults.isNotEmpty ? "  •  $matched matched" : ""}',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ],
+        const SizedBox(height: 16),
+        // Results / parameter list
+        Expanded(
+          child: _syncResults.isEmpty
+              ? _buildParameterPreview(total)
+              : _buildResultsList(),
+        ),
+      ],
+    );
+  }
+
+  /// Shows the loaded parameters before a sync has been run.
+  Widget _buildParameterPreview(int total) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Loaded parameters (preview):',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        const SizedBox(height: 8),
+        Expanded(
+          child: ListView.builder(
+            itemCount: total,
+            itemBuilder: (context, index) {
+              final p = _parameters!.params[index];
+              return ListTile(
+                dense: true,
+                leading: CircleAvatar(radius: 14, child: Text('${index + 1}')),
+                title: Text(p.title),
+                subtitle: Text(
+                  'G=${p.group.toInt()} K=${p.key.toInt()} '
+                  'type=${p.type} value=${p.value}',
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Shows the per-parameter outcome after a sync run.
+  Widget _buildResultsList() {
+    return ListView.builder(
+      itemCount: _syncResults.length,
+      itemBuilder: (context, index) {
+        final r = _syncResults[index];
+        final p = r.parameter;
+        final icon = r.matched
+            ? Icons.check_circle
+            : r.sent
+            ? Icons.error_outline
+            : Icons.cancel;
+        final color = r.matched
+            ? Colors.green
+            : r.sent
+            ? Colors.orange
+            : Colors.red;
+        return ListTile(
+          leading: Icon(icon, color: color),
+          title: Text(p.title),
+          subtitle: Text(
+            'G=${p.group.toInt()} K=${p.key.toInt()} '
+            'sent=${p.value.toStringAsFixed(3)} '
+            'recv=${r.receivedValue?.toStringAsFixed(3) ?? "—"} '
+            'attempts=${r.attempts}'
+            '${r.error != null ? "  err=${r.error}" : ""}',
+          ),
+        );
+      },
     );
   }
 
