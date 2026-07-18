@@ -433,6 +433,14 @@
       "Info": ""
     },
     {
+      "Title": "FMS_PITCHUP_duration",
+      "Type": "uint8",
+      "Group": 3,
+      "Key": 7,
+      "Value": 0.0,
+      "Info": ""
+    },
+    {
       "Title": "CNT_ROLL_limit",
       "Type": "float",
       "Group": 4,
@@ -561,7 +569,7 @@
       "Info": ""
     },
     {
-      "Title": "CNT_PITCH_error_limit",
+      "Title": "CNT_PITCH_errorLimit",
       "Type": "float",
       "Group": 4,
       "Key": 17,
@@ -649,7 +657,7 @@
       "Info": ""
     },
     {
-      "Title": "CNT_Yaw_BTT__integralLimit",
+      "Title": "CNT_Yaw_BTT_integralLimit",
       "Type": "float",
       "Group": 4,
       "Key": 28,
@@ -1117,6 +1125,14 @@
       "Type": "uint8",
       "Group": 5,
       "Key": 42,
+      "Value": 0,
+      "Info": ""
+    },
+    {
+      "Title": "FS_failflagsEnable_10",
+      "Type": "uint8",
+      "Group": 5,
+      "Key": 43,
       "Value": 0,
       "Info": ""
     },
