@@ -361,9 +361,22 @@ class _ParserSenderExamplePageState extends State<ParserSenderExamplePage> {
       maxRetries: 3,
     );
 
-    // Run the sync. syncAll processes parameters sequentially, so we update
-    // progress as each result arrives by listening to the growing results list.
-    final results = await sync.syncAll();
+    final results = await sync.syncAll(
+      onResult: (result, processed, total) async {
+        if (!mounted) return;
+
+        setState(() {
+          _syncResults = [..._syncResults, result];
+          _syncProgress = processed;
+          final matched = _syncResults.where((r) => r.matched).length;
+          _syncStatus =
+              'Syncing parameters... $processed/$total processed, '
+              '$matched matched.';
+        });
+
+        await WidgetsBinding.instance.endOfFrame;
+      },
+    );
 
     if (!mounted) return;
     final matched = results.where((r) => r.matched).length;

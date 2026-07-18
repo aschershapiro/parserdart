@@ -406,7 +406,12 @@ void main() {
         maxRetries: 2,
       );
 
-      final results = await sync.syncAll();
+      final progress = <int>[];
+      final results = await sync.syncAll(
+        onResult: (_, processed, _) {
+          progress.add(processed);
+        },
+      );
 
       expect(results.length, 2);
       expect(results[0].matched, isFalse);
@@ -414,6 +419,7 @@ void main() {
       expect(results[0].attempts, 2);
       expect(results[1].matched, isTrue);
       expect(results[1].attempts, 1);
+      expect(progress, [1, 2]);
     },
   );
 }

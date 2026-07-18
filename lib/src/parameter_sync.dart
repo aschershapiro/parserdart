@@ -99,11 +99,21 @@ class ParameterSync {
   ///   5. On a value mismatch or timeout, retry up to [maxRetries] times.
   ///   6. If retries are exhausted, record the failure and continue to the
   ///      next parameter (the loop is never aborted by a single failure).
-  Future<List<ParameterSyncResult>> syncAll() async {
+  Future<List<ParameterSyncResult>> syncAll({
+    FutureOr<void> Function(
+      ParameterSyncResult result,
+      int processed,
+      int total,
+    )?
+    onResult,
+  }) async {
     final results = <ParameterSyncResult>[];
+    final total = parameters.params.length;
 
     for (final parameter in parameters.params) {
-      results.add(await _syncOne(parameter));
+      final result = await _syncOne(parameter);
+      results.add(result);
+      await onResult?.call(result, results.length, total);
     }
 
     return results;
