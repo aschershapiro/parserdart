@@ -151,6 +151,7 @@ class PacketSchema {
 /// Parser for binary data streams based on JSON schemas.
 class BinaryParser {
   final List<PacketSchema> _schemas = [];
+  final List<StreamSubscription<Uint8List>> _transportSubscriptions = [];
   final StreamController<Map<String, dynamic>> _parsedDataController =
       StreamController.broadcast();
 
@@ -184,7 +185,7 @@ class BinaryParser {
 
   /// Starts listening to a transport's data stream.
   void start(Transport transport) {
-    transport.onData.listen(_handleData);
+    _transportSubscriptions.add(transport.onData.listen(_handleData));
   }
 
   /// Handles incoming raw binary data.
@@ -407,6 +408,10 @@ class BinaryParser {
   int get bufferSize => _buffer.length;
 
   Future<void> dispose() async {
+    for (final subscription in _transportSubscriptions) {
+      await subscription.cancel();
+    }
+    _transportSubscriptions.clear();
     await _parsedDataController.close();
     _buffer.clear();
   }

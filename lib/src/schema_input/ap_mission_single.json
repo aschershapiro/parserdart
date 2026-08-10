@@ -8,7 +8,7 @@
         "senderId": "0x01",
         "receiverId": "0x02",
         "messageId": "0x12",
-        "dataLength": "0x21"
+        "dataLength": "0x1B"
     },
     "data": [
         {
@@ -43,7 +43,7 @@
         },
         {
             "field_name": "waypoint_param",
-            "type": "uint8",
+            "type": "uint16",
             "description": "Waypoint Parameter"
         }
     ],

@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:parserdart/parserdart.dart';
@@ -61,6 +60,42 @@ class _ParserSenderExamplePageState extends State<ParserSenderExamplePage> {
   bool _isSyncing = false;
   int _syncProgress = 0; // number of parameters processed so far
   String _syncStatus = 'Parameters not loaded';
+
+  // Mission sync state. Replace these sample items with the mission created by
+  // your application before calling MissionSync.
+  final List<MissionItem> _missionItems = const [
+    MissionItem(
+      waypointNumber: 1,
+      latitude: 35.6892,
+      longitude: 51.3890,
+      altitude: 120,
+      speed: 20,
+      mode: 0,
+      param: 0,
+    ),
+    MissionItem(
+      waypointNumber: 2,
+      latitude: 35.6900,
+      longitude: 51.3910,
+      altitude: 140,
+      speed: 25,
+      mode: 0,
+      param: 0,
+    ),
+    MissionItem(
+      waypointNumber: 3,
+      latitude: 35.6885,
+      longitude: 51.3930,
+      altitude: 120,
+      speed: 20,
+      mode: 0,
+      param: 0,
+    ),
+  ];
+  List<MissionSyncResult> _missionSyncResults = [];
+  bool _isMissionSyncing = false;
+  int _missionSyncProgress = 0;
+  String _missionSyncStatus = 'Mission ready to sync';
 
   @override
   void initState() {
@@ -310,6 +345,11 @@ class _ParserSenderExamplePageState extends State<ParserSenderExamplePage> {
                   label: Text('Param Sync'),
                   icon: Icon(Icons.sync),
                 ),
+                ButtonSegment<int>(
+                  value: 3,
+                  label: Text('Mission Sync'),
+                  icon: Icon(Icons.route),
+                ),
               ],
               selected: {_tabIndex},
               onSelectionChanged: (Set<int> newSelection) {
@@ -324,7 +364,9 @@ class _ParserSenderExamplePageState extends State<ParserSenderExamplePage> {
                   ? _buildReceiverView()
                   : _tabIndex == 1
                   ? _buildSenderView()
-                  : _buildParamSyncView(),
+                  : _tabIndex == 2
+                  ? _buildParamSyncView()
+                  : _buildMissionSyncView(),
             ),
           ],
         ),
@@ -420,7 +462,7 @@ class _ParserSenderExamplePageState extends State<ParserSenderExamplePage> {
                 ),
               ),
             ElevatedButton.icon(
-              onPressed: _isSyncing || !_isConnected
+              onPressed: _isSyncing || _isMissionSyncing || !_isConnected
                   ? null
                   : _syncAllParameters,
               icon: const Icon(Icons.sync),
@@ -516,6 +558,212 @@ class _ParserSenderExamplePageState extends State<ParserSenderExamplePage> {
     );
   }
 
+  Future<void> _syncMission() async {
+    if (_missionItems.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Mission is empty')));
+      return;
+    }
+    if (!_isConnected) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please connect first')));
+      return;
+    }
+
+    setState(() {
+      _isMissionSyncing = true;
+      _missionSyncResults = [];
+      _missionSyncProgress = 0;
+      _missionSyncStatus = 'Syncing mission...';
+    });
+
+    try {
+      final results =
+          await MissionSync(
+            sender: _sender,
+            parser: _parser,
+            missionItems: _missionItems,
+            timeout: const Duration(seconds: 2),
+            maxRetries: 3,
+          ).syncAll(
+            onResult: (result, processed, total) async {
+              if (!mounted) return;
+
+              setState(() {
+                _missionSyncResults = [..._missionSyncResults, result];
+                _missionSyncProgress = processed;
+                final matched = _missionSyncResults
+                    .where((result) => result.matched)
+                    .length;
+                _missionSyncStatus = result.success
+                    ? 'Syncing mission... $processed/$total processed, '
+                          '$matched matched.'
+                    : 'Mission stopped at waypoint '
+                          '${result.item.waypointNumber}: ${result.error}.';
+              });
+
+              await WidgetsBinding.instance.endOfFrame;
+            },
+          );
+
+      if (!mounted) return;
+      final matched = results.where((result) => result.matched).length;
+      final failure = results.where((result) => !result.success).firstOrNull;
+      setState(() {
+        _missionSyncResults = results;
+        _missionSyncProgress = results.length;
+        _isMissionSyncing = false;
+        _missionSyncStatus = failure == null
+            ? 'Done: all $matched mission items confirmed.'
+            : 'Stopped at waypoint ${failure.item.waypointNumber}: '
+                  '${failure.error}. $matched/${_missionItems.length} '
+                  'mission items confirmed.';
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isMissionSyncing = false;
+        _missionSyncStatus = 'Mission sync failed: $e';
+      });
+    }
+  }
+
+  Widget _buildMissionSyncView() {
+    final total = _missionItems.length;
+    final matched = _missionSyncResults
+        .where((result) => result.matched)
+        .length;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                'Mission Sync ($total waypoints)',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
+            if (_isMissionSyncing)
+              const Padding(
+                padding: EdgeInsets.only(right: 12),
+                child: SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              ),
+            ElevatedButton.icon(
+              onPressed: _isMissionSyncing || _isSyncing || !_isConnected
+                  ? null
+                  : _syncMission,
+              icon: const Icon(Icons.sync),
+              label: const Text('Sync Mission'),
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        Text(_missionSyncStatus, style: Theme.of(context).textTheme.bodySmall),
+        if (_isMissionSyncing || _missionSyncResults.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          LinearProgressIndicator(
+            value: total == 0 ? 0 : _missionSyncProgress / total,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            '$_missionSyncProgress / $total'
+            '${_missionSyncResults.isNotEmpty ? "  •  $matched matched" : ""}',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ],
+        const SizedBox(height: 16),
+        Expanded(
+          child: _missionSyncResults.isEmpty
+              ? _buildMissionPreview()
+              : _buildMissionResults(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMissionPreview() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Loaded mission (preview):',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        const SizedBox(height: 8),
+        Expanded(
+          child: ListView.builder(
+            itemCount: _missionItems.length,
+            itemBuilder: (context, index) {
+              final item = _missionItems[index];
+              return ListTile(
+                dense: true,
+                leading: CircleAvatar(
+                  radius: 14,
+                  child: Text('${item.waypointNumber}'),
+                ),
+                title: Text('Waypoint ${item.waypointNumber}'),
+                subtitle: Text(
+                  'lat=${item.latitude.toStringAsFixed(6)} '
+                  'lon=${item.longitude.toStringAsFixed(6)} '
+                  'alt=${item.altitude.toStringAsFixed(1)}  '
+                  'speed=${item.speed} mode=${item.mode} param=${item.param}',
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMissionResults() {
+    return ListView.builder(
+      itemCount: _missionSyncResults.length,
+      itemBuilder: (context, index) {
+        final result = _missionSyncResults[index];
+        final item = result.item;
+        final received = result.receivedItem;
+        final icon = result.matched
+            ? Icons.check_circle
+            : result.sent
+            ? Icons.error_outline
+            : Icons.cancel;
+        final color = result.matched
+            ? Colors.green
+            : result.sent
+            ? Colors.orange
+            : Colors.red;
+
+        return ListTile(
+          leading: Icon(icon, color: color),
+          title: Text('Waypoint ${item.waypointNumber}'),
+          subtitle: Text(
+            'sent: ${_missionItemSummary(item)}\n'
+            'echo: ${received == null ? "—" : _missionItemSummary(received)}  '
+            'attempts=${result.attempts}'
+            '${result.error != null ? "  err=${result.error}" : ""}',
+          ),
+          isThreeLine: true,
+        );
+      },
+    );
+  }
+
+  String _missionItemSummary(MissionItem item) {
+    return '${item.latitude.toStringAsFixed(6)}, '
+        '${item.longitude.toStringAsFixed(6)}, '
+        'alt=${item.altitude.toStringAsFixed(1)}, speed=${item.speed}, '
+        'mode=${item.mode}, param=${item.param}';
+  }
+
   Widget _buildUdpConfig() {
     return Row(
       children: [
@@ -564,7 +812,7 @@ class _ParserSenderExamplePageState extends State<ParserSenderExamplePage> {
           children: [
             Expanded(
               child: DropdownButtonFormField<String>(
-                value: _selectedPort,
+                initialValue: _selectedPort,
                 decoration: const InputDecoration(
                   labelText: 'Serial Port',
                   border: OutlineInputBorder(),
