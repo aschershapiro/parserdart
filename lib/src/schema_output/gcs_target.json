@@ -1,0 +1,28 @@
+{
+    "packet_name": "gcs_target",
+    "version": "1.0.0",
+    "description": "sending a single target from GCS to flight controller",
+    "headers": {
+        "header1": "0xca",
+        "header2": "0xfe",
+        "senderId": "0x02",
+        "receiverId": "0x01",
+        "messageId": "0xA8",
+        "dataLength": "0x14"
+    },
+    "data": [
+        {
+            "tag": "target_latitude",
+            "type": "double"
+        },
+        {
+            "tag": "target_longitude",
+            "type": "double"
+        },
+        {
+            "tag": "target_altitude",
+            "type": "float"
+        }
+    ],
+    "checksum": "CRC16"
+}
