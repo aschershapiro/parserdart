@@ -76,7 +76,7 @@ class MissionSync {
     required Iterable<MissionItem> missionItems,
     this.timeout = const Duration(seconds: 2),
     this.maxRetries = 3,
-    this.coordinateEpsilon = 1e-9,
+    this.coordinateEpsilon = 1e-5,
     this.altitudeEpsilon = 1e-3,
   }) : missionItems = List<MissionItem>.unmodifiable(missionItems) {
     if (maxRetries < 1) {
