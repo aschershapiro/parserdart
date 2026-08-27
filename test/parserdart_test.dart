@@ -106,6 +106,14 @@ void main() {
     await transport.dispose();
   });
 
+  test('BinaryPacketSender resolves message ID by schema name', () async {
+    final sender = BinaryPacketSender();
+    await sender.loadSchemas('lib/src/schema_output');
+    parser.start(transport);
+
+    expect(sender.messageIdForSchema('gcs_mission_single'), 0xA1);
+  });
+
   test('BinaryParser loads schema and parses packet', () async {
     // Load schemas from the actual schema directory
     await parser.loadSchemas('lib/src/schema_input');

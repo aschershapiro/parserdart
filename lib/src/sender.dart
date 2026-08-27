@@ -60,6 +60,18 @@ class BinaryPacketSender {
     }
   }
 
+  /// Returns the message ID declared by the named loaded schema.
+  int messageIdForSchema(String schemaName) {
+    final schema = _findSchema(schemaName);
+    if (schema == null) {
+      throw Exception('Schema not found: $schemaName');
+    }
+    if (schema.headerBytes.length <= 4) {
+      throw Exception('Schema "$schemaName" has no messageId header.');
+    }
+    return schema.headerBytes[4];
+  }
+
   /// Sends a packet based on the schema name and data.
   ///
   /// If the schema has fields defined in "data", pass a Map<String, dynamic>

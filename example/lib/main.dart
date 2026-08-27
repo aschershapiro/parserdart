@@ -65,31 +65,31 @@ class _ParserSenderExamplePageState extends State<ParserSenderExamplePage> {
   // your application before calling MissionSync.
   final List<MissionItem> _missionItems = const [
     MissionItem(
-      waypointNumber: 1,
+      waypointNumber: 0,
       latitude: 35.6892,
       longitude: 51.3890,
       altitude: 120,
       speed: 20,
       mode: 0,
-      param: 0,
+      param: 3,
     ),
     MissionItem(
-      waypointNumber: 2,
+      waypointNumber: 1,
       latitude: 35.6900,
       longitude: 51.3910,
       altitude: 140,
       speed: 25,
       mode: 0,
-      param: 0,
+      param: 3,
     ),
     MissionItem(
-      waypointNumber: 3,
+      waypointNumber: 2,
       latitude: 35.6885,
       longitude: 51.3930,
       altitude: 120,
       speed: 20,
       mode: 0,
-      param: 0,
+      param: 3,
     ),
   ];
   List<MissionSyncResult> _missionSyncResults = [];

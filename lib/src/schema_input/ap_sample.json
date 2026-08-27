@@ -1,0 +1,66 @@
+{
+    "packet_name": "ap_sample",
+    "version": "1.0.0",
+    "description": "Sample autopilot telemetry packet — edit fields freely, then run: python tools/gen_telemetry.py",
+    "headers": {
+        "header1": "0xca",
+        "header2": "0xfe",
+        "senderId": "0x01",
+        "receiverId": "0x02",
+        "messageId": "0x13",
+        "dataLength": "auto"
+    },
+    "data": [
+        {
+            "field_name": "IMU.roll",
+            "type": "float",
+            "description": "Roll angle (rad)"
+        },
+        {
+            "field_name": "IMU.pitch",
+            "type": "float",
+            "description": "Pitch angle (rad)"
+        },
+        {
+            "field_name": "IMU.yaw",
+            "type": "float",
+            "description": "Yaw angle (rad)"
+        },
+        {
+            "field_name": "IMU.altBaro",
+            "type": "float",
+            "description": "Barometric altitude (m)"
+        },
+        {
+            "field_name": "IMU.groundSpeed",
+            "type": "float",
+            "description": "Ground speed (m/s)"
+        },
+        {
+            "field_name": "SU.FM_flightMode",
+            "type": "uint8_t",
+            "description": "Active flight mode"
+        },
+        {
+            "field_name": "SU.ECU_leftEngineRPM",
+            "type": "uint32_t",
+            "description": "Left engine RPM"
+        },
+        {
+            "field_name": "SU.ECU_rightEngineRPM",
+            "type": "uint32_t",
+            "description": "Right engine RPM"
+        },
+        {
+            "field_name": "SU.SYS_mainBatteryVoltage",
+            "type": "float",
+            "description": "Main battery voltage (V)"
+        },
+        {
+            "field_name": "SU.GUI_activeWaypoint",
+            "type": "uint16_t",
+            "description": "Current active waypoint index"
+        }
+    ],
+    "checksum": "CRC16"
+}

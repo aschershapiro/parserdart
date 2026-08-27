@@ -7,7 +7,7 @@
         "header2": "0xfe",
         "senderId": "0x01",
         "receiverId": "0x02",
-        "messageId": "0x12",
+        "messageId": "0x13",
         "dataLength": "0x1B"
     },
     "data": [

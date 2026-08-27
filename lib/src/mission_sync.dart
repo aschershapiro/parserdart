@@ -76,7 +76,7 @@ class MissionSync {
     required Iterable<MissionItem> missionItems,
     this.timeout = const Duration(seconds: 2),
     this.maxRetries = 3,
-    this.coordinateEpsilon = 1e-9,
+    this.coordinateEpsilon = 1e-5,
     this.altitudeEpsilon = 1e-3,
   }) : missionItems = List<MissionItem>.unmodifiable(missionItems) {
     if (maxRetries < 1) {
@@ -87,7 +87,8 @@ class MissionSync {
   final BinaryPacketSender sender;
   final BinaryParser parser;
 
-  /// Items are sent in this list's order, from the first item to the last.
+  /// Items are sent in this list's order. Their packet waypoint numbers are
+  /// assigned from zero and packet params contain the total mission size.
   final List<MissionItem> missionItems;
   final Duration timeout;
 
@@ -111,7 +112,21 @@ class MissionSync {
   }) async {
     final results = <MissionSyncResult>[];
 
-    for (final item in missionItems) {
+    for (
+      var waypointNumber = 0;
+      waypointNumber < missionItems.length;
+      waypointNumber++
+    ) {
+      final source = missionItems[waypointNumber];
+      final item = MissionItem(
+        waypointNumber: waypointNumber,
+        latitude: source.latitude,
+        longitude: source.longitude,
+        altitude: source.altitude,
+        speed: source.speed,
+        mode: source.mode,
+        param: missionItems.length,
+      );
       final result = await _syncOne(item);
       results.add(result);
       await onResult?.call(result, results.length, missionItems.length);
@@ -136,7 +151,11 @@ class MissionSync {
       });
 
       try {
-        await sender.send(schemaName: gcsSchemaName, data: item.toPacketData());
+        await sender.send(
+          schemaName: gcsSchemaName,
+          messageId: sender.messageIdForSchema(gcsSchemaName),
+          data: item.toPacketData(),
+        );
       } catch (e) {
         await echoSubscription.cancel();
         return MissionSyncResult(
